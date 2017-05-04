@@ -1,0 +1,2 @@
+def mutate(sequence):
+	pass
