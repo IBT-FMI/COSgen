@@ -8,6 +8,9 @@ class functions:
 	def evaluate_fitness(self,sequence):
 		return sum([self.fitness_measures[f](sequence) for f in self.fitness_measures])
 
+	def find_best(population,n):
+		pass
+
 	def add_fitness_measure(self,name,function):
 		if name in self.fitness_measures:
 			print("A fitness measure called {0} already "
