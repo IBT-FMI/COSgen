@@ -1,5 +1,3 @@
-def find_best(population):
-	pass
 
 class MissingFunction(Exception):
 	pass
@@ -16,5 +14,5 @@ def ga(population,functions,generations=100):
 	for seq in population:
 		seq.fitness = functions.evaluate_fitness(seq)
 	for i in range(generations):
-		best_seqs = find_best(population)
+		best_seqs = functions.find_best(population,n)
 		#cross over, mutate and update the fitnesses
