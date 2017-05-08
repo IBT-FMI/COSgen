@@ -1,2 +1,2 @@
 def mutate(sequence):
-	pass
+	return sequence

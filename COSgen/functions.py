@@ -8,8 +8,10 @@ class functions:
 	def evaluate_fitness(self,sequence):
 		return sum([self.fitness_measures[f](sequence) for f in self.fitness_measures])
 
+	@staticmethod
 	def find_best(population,n):
-		pass
+		#implement this properly!! sequence is not sorted!!
+		return population[:n]
 
 	def add_fitness_measure(self,name,function):
 		if name in self.fitness_measures:
