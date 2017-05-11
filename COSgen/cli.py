@@ -5,15 +5,15 @@ try:
 	from COSgen.algorithms import ga
 	import COSgen.fitness_measures as fitness_measures
 	from COSgen.sequence import sequence
-	from COSgen.mutate_functions import mutate
-	from COSgen.cross_over_functions import cross_over
+	from COSgen.mutate import mutate
+	from COSgen.cross_over import cross_over
 except ImportError:
 	from functions import functions
 	from algorithms import ga
 	import fitness_measures
 	from sequence import sequence
-	from mutate_functions import mutate
-	from cross_over_functions import cross_over
+	from mutate import mutate
+	from cross_over import cross_over
 
 import argh
 from os.path import expanduser
