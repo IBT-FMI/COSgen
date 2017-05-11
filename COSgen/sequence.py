@@ -4,7 +4,7 @@ import random
 class sequence:
 	def __init__(self,seqlen,nstimtypes,seqtype='random'):
 		if seqtype=='random':
-			self.l = random.sample(range(nstimtypes),seqlen)
+			self.l = [ random.randrange(0,nstimtypes+1,1) for _ in range(seqlen) ]
 		elif seqtype=='block':
 			pass
 		elif seqtype=='m':
