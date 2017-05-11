@@ -1,5 +1,8 @@
 from functools import partial
 
+class WrongOrderError(Exception):
+	pass
+
 class functions:
 
 	def __init__(self):
@@ -34,3 +37,10 @@ class functions:
 	def del_cross_over(self,function):
 		delattr(self,'cross_over')
 
+	def set_generate_immigrants(self,function):
+		if not hasattr(self,'cross_over'):
+			raise WrongOrderError('cross_over function has to be set before set_generate_imigrants can be used')
+		setattr(self,'generate_immigrants',partial(function,cross_over_fct=self.cross_over))
+
+	def del_generate_immigrants(self,function):
+		delattr(self,'generate_immigrants')

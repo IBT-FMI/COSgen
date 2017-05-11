@@ -1,5 +1,6 @@
 import datetime
 import random
+import os
 
 class sequence:
 	def __init__(self,seqlen,nstimtypes,seqtype='random'):
@@ -11,6 +12,7 @@ class sequence:
 			pass
 		self.fitness = None
 	def dump(self,path):
+		os.makedirs(path, exist_ok=True)
 		path = path + '/{:%Y%m%d%H%M%S}.tsv'.format(datetime.datetime.now())
 		with open(path,'w+') as f:
 			f.write('hello')
