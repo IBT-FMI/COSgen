@@ -9,10 +9,10 @@ setup(
 	keywords = ["fMRI", "stimulus", "contrast", "optimization"],
 	url = "https://github.com/IBT-FMI/COSgen.git",
 	install_requires = [],
-	provides = ["COSgen"],
-	packages = ["COSgen"],
+	provides = ["cosgen"],
+	packages = ["cosgen"],
 	include_package_data = True,
 	entry_points = {
-		'console_scripts' : ['COSgen = COSgen.cli:main']
+		'console_scripts' : ['COSgen = cosgen.cli:main']
 	}
 	)

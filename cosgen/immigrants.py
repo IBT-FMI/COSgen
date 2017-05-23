@@ -1,5 +1,5 @@
 try:
-	import COSgen.sequence as sequence
+	import cosgen.sequence as sequence
 except ImportError:
 	import sequence
 
