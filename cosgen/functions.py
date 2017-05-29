@@ -1,4 +1,5 @@
 from functools import partial
+import random
 
 class WrongOrderError(Exception):
 	pass
@@ -8,6 +9,58 @@ class RmAttrError(Exception):
 
 class OverwriteAttrError(Exception):
 	pass
+
+def partition(population, left, right, pivotIndex):
+	"""code from https://rosettacode.org/wiki/Quickselect_algorithm#Python """
+	pivotValue = population[pivotIndex].fitness
+	population[pivotIndex], population[right] = population[right], population[pivotIndex]  # Move pivot to end
+	storeIndex = left
+	for i in range(left, right):
+	    if population[i].fitness < pivotValue:
+	        population[storeIndex], population[i] = population[i], population[storeIndex]
+	        storeIndex += 1
+	population[right], population[storeIndex] = population[storeIndex], population[right]  # Move pivot to its final place
+	return storeIndex
+
+def quickselect(population, left, right, k):
+	"""code from https://rosettacode.org/wiki/Quickselect_algorithm#Python """
+	""""Returns the k-th smallest, (k >= 0), element of population within population[left:right+1] inclusive."""
+	while True:
+		pivotIndex = random.randint(left, right)     # select pivotIndex between left and right
+		pivotNewIndex = partition(population, left, right, pivotIndex)
+		pivotDist = pivotNewIndex - left
+		if pivotDist == k:
+			return population[pivotNewIndex]
+		elif k < pivotDist:
+			right = pivotNewIndex - 1
+		else:
+			k -= pivotDist + 1
+			left = pivotNewIndex + 1
+#	for i in population:
+#		print(i.fitness,i.l)
+#	if left == right:
+#		return population[left]
+#	pivotIndex = random.randint(left, right)     # select pivotIndex between left and right
+#	pivotIndex = partition(population, left, right, pivotIndex)
+#	if pivotIndex == k:
+#		return population[k]
+#	elif k < pivotIndex:
+#		return quickselect(population, left, pivotIndex-1, k)
+#	else:
+#		return quickselect(population, pivotIndex+1, right, k)
+#	while True:
+#		for i in population:
+#			print(i.fitness,i.l)
+#		pivotIndex = random.randint(left, right)     # select pivotIndex between left and right
+#		pivotNewIndex = partition(population, left, right, pivotIndex)
+#		pivotDist = right - pivotNewIndex
+#		if pivotDist == k:
+#			return population[pivotNewIndex:]
+#		elif k < pivotDist:
+#			right = pivotNewIndex - 1
+#		else:
+#			k -= pivotDist + 1
+#			left = pivotNewIndex + 1
 
 class functions:
 
@@ -19,8 +72,8 @@ class functions:
 
 	@staticmethod
 	def find_best(population,n):
-		# TODO implement this properly!! sequence is not sorted!!
-		return population[:n]
+		nidx = quickselect(population,0,len(population)-1,len(population)-n)
+		return population[len(population)-n:]
 
 	def add_fitness_measure(self,name,function):
 		if name in self.fitness_measures:

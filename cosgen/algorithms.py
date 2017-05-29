@@ -12,7 +12,8 @@ def ga(population,functions,generations=100):
 	if len(functions.fitness_measures) == 0:
 		raise MissingFunction("No fitness measures in 'functions'.")
 	population_size = len(population)
-	n = int(population_size/2)	#number of sequences surviving each generation
+	n =  3 #int(population_size/2)	#number of sequences surviving each generation
+	print('n = ',n)
 	for seq in population:
 		seq.fitness = functions.evaluate_fitness(seq)
 	for i in range(generations):
