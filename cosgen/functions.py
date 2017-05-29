@@ -36,31 +36,6 @@ def quickselect(population, left, right, k):
 		else:
 			k -= pivotDist + 1
 			left = pivotNewIndex + 1
-#	for i in population:
-#		print(i.fitness,i.l)
-#	if left == right:
-#		return population[left]
-#	pivotIndex = random.randint(left, right)     # select pivotIndex between left and right
-#	pivotIndex = partition(population, left, right, pivotIndex)
-#	if pivotIndex == k:
-#		return population[k]
-#	elif k < pivotIndex:
-#		return quickselect(population, left, pivotIndex-1, k)
-#	else:
-#		return quickselect(population, pivotIndex+1, right, k)
-#	while True:
-#		for i in population:
-#			print(i.fitness,i.l)
-#		pivotIndex = random.randint(left, right)     # select pivotIndex between left and right
-#		pivotNewIndex = partition(population, left, right, pivotIndex)
-#		pivotDist = right - pivotNewIndex
-#		if pivotDist == k:
-#			return population[pivotNewIndex:]
-#		elif k < pivotDist:
-#			right = pivotNewIndex - 1
-#		else:
-#			k -= pivotDist + 1
-#			left = pivotNewIndex + 1
 
 class functions:
 
