@@ -20,6 +20,6 @@ def ga(population,functions,generations=100):
 		best_seqs = functions.find_best(population,n)
 		population = best_seqs
 		for i in range(population_size-n):
-			population.append(functions.cross_over(best_seqs[random.randrange(n)],best_seqs[random.randrange(n)],mutation_probability=0.5))
+			population.append(functions.cross_over(best_seqs[random.randrange(n)],best_seqs[random.randrange(n)]))
 			population[len(population)-1].fitness = functions.evaluate_fitness(population[len(population)-1])
 	return population
