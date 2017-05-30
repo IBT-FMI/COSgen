@@ -14,4 +14,4 @@ def cross_over(sequence1, sequence2, mutation_rate=0.3):
 	idxs = random.sample(range(length),int(length*mutation_rate))
 	for i in idxs:
 		l[i] = random.randrange(nstimtypes+1)
-	return sequence.sequence(l=l)
+	return sequence.sequence(nstimtypes=nstimtypes,l=l)
