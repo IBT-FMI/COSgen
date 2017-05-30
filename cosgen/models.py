@@ -1,3 +1,6 @@
+import numpy as np
+import scipy.special
+
 class Model:
 
 	def __init__(self, design_matrix_func, cov_beta_func):
@@ -48,17 +51,25 @@ class DetectionModel(Model):
 	def design_matrix(self, sequence):
 		X = [np.array(sequence.l) == i for i in range(sequence.nstimtypes+1)]
 		Z = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=np.array(X).astype(int)))
-		return np.c_[np.ones(len(Z)),np.c_[range(len(Z)),Z]] #add base line and linear trend/drift
+		return np.matrix(np.c_[np.ones(len(Z)),np.c_[range(len(Z)),Z]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
-		pass
+		Z = self.whitening_mat*X
+		try:
+			A = np.linalg.inv(np.transpose(Z)*Z)
+		except LinAlgError:
+			A = np.linalg.pinv(np.transpose(Z)*Z)
+		V = self.whitening_mat*np.transpose(self.whitening_mat)
+		return A*np.transpose(Z)*self.whitening_mat*V*np.transpose(self.whitening_mat)*Z*A
+			
 
 
 def get_canonical_basis_set(TR,length,order):
 	pass
 
-def get_gamma_basis_set(TR,length,order):
-	pass
+def get_gamma_basis_set(TR,length,order,a1,b1,a2,b2i,c):
+	t = range(0,length*TR,TR)
+	basis = []
 
 def get_FIR_basis_set(TR,length,order):
 	pass
@@ -71,3 +82,15 @@ def get_fourier_basis_set(TR,length,order):
 
 def get_ICA_basis_set(TR,length,order):
 	pass
+
+def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
+	t = np.array(range(0,length*TR,TR))
+	const1 = b1^(a1+1)
+	const2 = b2^(a2+1)
+	denom1 = scipy.special.gamma(a1+1)
+	denom2 = c * scipy.special.gamma(a2+1)
+	return const1 * t**a1 * np.exp(-b1*t)/denom1 - const2 * t**a2 * np.exp(-b2*t)/denom2
+
+def get_ar1_cov(dim,phi):
+	return np.matrix(np.fromfunction(lambda i, j: phi**np.abs(i-j), (dim, dim)))
+
