@@ -9,7 +9,7 @@ class sequence:
 		if l is not None:
 			self.l = l
 			self.seqlen = len(l)
-			self.nstimtypes = len(set(l))
+			self.nstimtypes = len(set(l))-1
 		elif seqtype=='random':
 			self.l = [ random.randrange(0,nstimtypes+1,1) for _ in range(seqlen) ]
 			self.seqlen = seqlen
