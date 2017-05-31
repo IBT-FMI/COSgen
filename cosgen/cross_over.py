@@ -11,7 +11,4 @@ def cross_over(sequence1, sequence2, mutation_rate=0.3):
 	l = sequence1.l[:r]
 	l.extend(sequence2.l[r:])
 	nstimtypes = max(sequence1.nstimtypes,sequence2.nstimtypes)
-	idxs = random.sample(range(length),int(length*mutation_rate))
-	for i in idxs:
-		l[i] = random.randrange(nstimtypes+1)
 	return sequence.sequence(nstimtypes=nstimtypes,l=l)
