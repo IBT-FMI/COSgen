@@ -7,7 +7,7 @@ except ImportError:
 class MissingFunction(Exception):
 	pass
 
-def ga(population,functions,generations=100):
+def ga(population,functions,generations,nsurvive):
 	
 	if not hasattr(functions,'mutate'):
 		raise MissingFunction("No 'mutate' function in 'functions'.")
@@ -17,16 +17,18 @@ def ga(population,functions,generations=100):
 		raise MissingFunction("No fitness measures in 'functions'.")
 	stat = statistics()
 	population_size = len(population)
-	n =  3 #int(population_size/2)	#number of sequences surviving each generation
-	print('n = ',n)
 	for seq in population:
 		seq.fitness = functions.evaluate_fitness(seq)
 	for i in range(generations):
 		stat.add(population)
-		best_seqs = functions.find_best(population,n)
+		best_seqs = functions.find_best(population,nsurvive)
 		population = best_seqs
-		for i in range(population_size-n):
-			population.append(functions.cross_over(best_seqs[random.randrange(n)],best_seqs[random.randrange(n)]))
+		for i in range(population_size-nsurvive):
+			population.append(
+				functions.mutate(
+					functions.cross_over(best_seqs[random.randrange(nsurvive)],best_seqs[random.randrange(nsurvive)]),
+					0.1)
+			)
 			population[len(population)-1].fitness = functions.evaluate_fitness(population[len(population)-1])
 	stat.show()
 	return population
