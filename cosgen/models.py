@@ -17,17 +17,14 @@ class Model:
 
 class EstimationModel(Model):
 
-	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, noise_var=1, min_detectable_stim_dur=0):
+	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, noise_var=1):
 		self.basis_set = basis_set
 		self.noise_var = noise_var
 		if whitening_mat is not None:
 			self.whitening_mat = whitening_mat
-		if err_cov_mat is not None:
+		elif err_cov_mat is not None:
 			L = np.linalg.cholesky(err_cov_mat)
-			try:
-				self.whitening_mat = np.linalg.inv(L)
-			except LinAlgError:
-				self.whitening_mat = np.linalg.pinv(L)
+			self.whitening_mat = np.linalg.inv(L)
 
 	def design_matrix(self, sequence):
 		pass
@@ -37,16 +34,13 @@ class EstimationModel(Model):
 
 class DetectionModel(Model):
 
-	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None, min_detectable_stim_dur=0):
+	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None):
 		self.hrf = hrf
 		if whitening_mat is not None:
 			self.whitening_mat = whitening_mat
-		if err_cov_mat is not None:
+		elif err_cov_mat is not None:
 			L = np.linalg.cholesky(err_cov_mat)
-			try:
-				self.whitening_mat = np.linalg.inv(L)
-			except LinAlgError:
-				self.whitening_mat = np.linalg.pinv(L)
+			self.whitening_mat = np.linalg.inv(L)
 
 	def design_matrix(self, sequence):
 		X = [np.array(sequence.l) == i for i in range(sequence.nstimtypes+1)]
@@ -54,14 +48,10 @@ class DetectionModel(Model):
 		return np.matrix(np.c_[np.ones(len(Z)),np.c_[range(len(Z)),Z]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
+		#This is only for pre-whitening and not precoloring
 		Z = self.whitening_mat*X
-		try:
-			A = np.linalg.inv(np.transpose(Z)*Z)
-		except LinAlgError:
-			A = np.linalg.pinv(np.transpose(Z)*Z)
-		V = self.whitening_mat*np.transpose(self.whitening_mat)
-		return A*np.transpose(Z)*self.whitening_mat*V*np.transpose(self.whitening_mat)*Z*A
-			
+		Zpinv = np.linalg.pinv(Z)
+		return Zpinv * np.transpose(Zpinv)	
 
 
 def get_canonical_basis_set(TR,length,order):
