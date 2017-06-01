@@ -32,3 +32,10 @@ class Sequence:
 		path = path + '/{:%Y%m%d%H%M%S}.tsv'.format(datetime.datetime.now())
 		with open(path,'w+') as f:
 			f.write('hello')
+
+def estimate_optimal_block_size(hrf,seqlen):
+	#returns an estimate for the optimal value of a block design in multiples of TR (if hrf has not enough sample points this might not work properly?)
+	ft_hrf = np.absolute(np.fft.rfft(hrf))
+	ft_freq = np.fft.rfftfreq(hrf.size)
+	idx = np.argmax(ft_hrf)
+	return 1./ft_freq[idx]
