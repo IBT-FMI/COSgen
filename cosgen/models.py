@@ -17,9 +17,8 @@ class Model:
 
 class EstimationModel(Model):
 
-	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, noise_var=1):
+	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None):
 		self.basis_set = basis_set
-		self.noise_var = noise_var
 		if whitening_mat is not None:
 			self.whitening_mat = whitening_mat
 		elif err_cov_mat is not None:
@@ -27,10 +26,18 @@ class EstimationModel(Model):
 			self.whitening_mat = np.linalg.inv(L)
 
 	def design_matrix(self, sequence):
-		pass
+		lb = len(self.basis_set)
+		Xconv = np.empty(( len(sequence.l) + len(self.basis_set[0]) - 1, sequence.nstimtypes * lb ))
+		for i in range(1, sequence.nstimtypes+1):
+			for j in range(lb):
+				Xconv[:, lb * (i-1) + j] = np.convolve(sequence.l == i, self.basis_set[j])
+		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[range(len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
-		pass
+		#This is only for pre-whitening and not precoloring
+		Z = self.whitening_mat*X
+		Zpinv = np.linalg.pinv(Z)
+		return Zpinv * np.transpose(Zpinv)	
 
 class DetectionModel(Model):
 
@@ -44,8 +51,8 @@ class DetectionModel(Model):
 
 	def design_matrix(self, sequence):
 		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
-		Z = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=X))
-		return np.matrix(np.c_[np.ones(len(Z)),np.c_[range(len(Z)),Z]]) #add base line and linear trend/drift
+		Xconv = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=X))
+		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[range(len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
 		#This is only for pre-whitening and not precoloring
@@ -61,8 +68,8 @@ def get_gamma_basis_set(TR,length,order,a1,b1,a2,b2i,c):
 	t = range(0,length*TR,TR)
 	basis = []
 
-def get_FIR_basis_set(TR,length,order):
-	pass
+def get_FIR_basis_set(length):
+	return np.identity(length)
 
 def get_bspline_basis_set(TR,length,order):
 	pass

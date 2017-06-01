@@ -32,19 +32,21 @@ def cli_algorithm(population_size=20, library_size=10, storage_path='~/.cosgen/s
 #	def cov_mat(x):
 #		return np.identity(len(x[0]))
 #	model = models.Model(design_mat, cov_mat)
-	gamma_hrf = models.get_gamma_hrf(1,40,5,1,10,1,1)
+#	gamma_hrf = models.get_gamma_hrf(1,40,5,1,10,1,1)
 	ar1_cov = models.get_ar1_cov(139,0.5)
 #	import math
 #	gamma_hrf = np.zeros(40)
 #	gamma_hrf[0:len(gamma_hrf):2]=1
 #	ar1_cov = np.identity(139)
-	model = models.DetectionModel(gamma_hrf,err_cov_mat=ar1_cov)
+#	model = models.DetectionModel(gamma_hrf,err_cov_mat=ar1_cov)
+	basis_set = models.get_FIR_basis_set(40)
+	model = models.EstimationModel(basis_set,err_cov_mat=ar1_cov)
 	fcts.add_fitness_measure('cov',partial(fitness_measures.estimator_variance,model=model,optimality='a'))
 #	fcts.add_fitness_measure('test', fitness_measures.test)
 	fcts.set_mutate(mutate)
 	fcts.set_cross_over(cross_over)
 	fcts.set_generate_immigrants(generate_immigrants)
-	population = [sequence(seqlength,nstimtyps) for i in range(population_size)]
+	population = [sequence(seqlength,nstimtypes) for i in range(population_size)]
 	population = ga(population,fcts,generations,survivors)
 	for seq in fcts.find_best(population,library_size):
 		#seq.dump(storage_path)
