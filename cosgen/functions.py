@@ -37,7 +37,7 @@ def quickselect(population, left, right, k):
 			k -= pivotDist + 1
 			left = pivotNewIndex + 1
 
-class functions:
+class FunctionCrate:
 
 	def __init__(self):
 		self.fitness_measures = {}

@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-class statistics:
+class Statistics:
 	def __init__(self):
 		self.max_fitness = []
 		self.average_fitness = []

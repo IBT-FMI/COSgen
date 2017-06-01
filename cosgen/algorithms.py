@@ -1,8 +1,8 @@
 import random
 try:
-	from cosgen.statistics import statistics
+	from cosgen.statistics import Statistics
 except ImportError:
-	from statistics import statistics
+	from statistics import Statistics
 
 class MissingFunction(Exception):
 	pass
@@ -15,7 +15,8 @@ def ga(population,functions,generations,nsurvive):
 		raise MissingFunction("No 'cross_over' function in 'functions'.")
 	if len(functions.fitness_measures) == 0:
 		raise MissingFunction("No fitness measures in 'functions'.")
-	stat = statistics()
+
+	stat = Statistics()
 	population_size = len(population)
 	for seq in population:
 		seq.fitness = functions.evaluate_fitness(seq)

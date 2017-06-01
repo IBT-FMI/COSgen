@@ -2,7 +2,7 @@ import datetime
 import numpy as np
 import os
 
-class sequence:
+class Sequence:
 	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None):
 		self.fitness = None
 		self.nstimtypes = nstimtypes
