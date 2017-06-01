@@ -1,9 +1,13 @@
 import datetime
 import numpy as np
 import os
+import random
+
+class BlockSizeError(Exception):
+	pass
 
 class Sequence:
-	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None):
+	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, block_size=None):
 		self.fitness = None
 		self.nstimtypes = nstimtypes
 		if l is not None:
@@ -14,7 +18,13 @@ class Sequence:
 			self.l = np.random.randint(nstimtypes+1,size=seqlen)
 			self.seqlen = seqlen
 		elif seqtype=='block':
-			pass
+			if block_size < 0 or seqlen % block_size != 0:
+				raise BlockSizeError('block_size must be a positive devisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
+			self.l = np.empty(seqlen)
+			position=0
+			while position<seqlen:
+				self.l[position:position+block_size] = random.randint(0,nstimtypes)
+				position += block_size
 		elif seqtype=='m':
 			pass
 	def dump(self, path):
