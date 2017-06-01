@@ -1,5 +1,5 @@
 import datetime
-import random
+import numpy as np
 import os
 
 class sequence:
@@ -11,7 +11,7 @@ class sequence:
 			self.seqlen = len(l)
 			self.nstimtypes = len(set(l))-1
 		elif seqtype=='random':
-			self.l = [ random.randrange(0,nstimtypes+1,1) for _ in range(seqlen) ]
+			self.l = np.random.randint(nstimtypes+1,size=seqlen)
 			self.seqlen = seqlen
 		elif seqtype=='block':
 			pass

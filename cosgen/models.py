@@ -43,8 +43,8 @@ class DetectionModel(Model):
 			self.whitening_mat = np.linalg.inv(L)
 
 	def design_matrix(self, sequence):
-		X = [np.array(sequence.l) == i for i in range(sequence.nstimtypes+1)]
-		Z = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=np.array(X).astype(int)))
+		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
+		Z = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=X))
 		return np.matrix(np.c_[np.ones(len(Z)),np.c_[range(len(Z)),Z]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
