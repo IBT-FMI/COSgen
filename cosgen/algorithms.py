@@ -1,4 +1,5 @@
-import random
+import numpy as np
+
 try:
 	from cosgen.statistics import Statistics
 except ImportError:
@@ -24,10 +25,14 @@ def ga(population,functions,generations,nsurvive):
 		stat.add(population)
 		best_seqs = functions.find_best(population,nsurvive)
 		population = best_seqs
+		p = np.array([s.fitness for s in best_seqs])
+		p = p/p.sum()
+		idxs = range(nsurvive)
 		for i in range(population_size-nsurvive):
+			parents = np.random.choice(idxs, 2, False, p)
 			population.append(
 				functions.mutate(
-					functions.cross_over(best_seqs[random.randrange(nsurvive)],best_seqs[random.randrange(nsurvive)]),
+					functions.cross_over(best_seqs[parents[0]],best_seqs[parents[1]]),
 					0.1)
 			)
 			population[len(population)-1].fitness = functions.evaluate_fitness(population[len(population)-1])
