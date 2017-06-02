@@ -8,7 +8,7 @@ except ImportError:
 class MissingFunction(Exception):
 	pass
 
-def ga(population,functions,generations,nsurvive):
+def ga(population,functions,generations,nsurvive,nimmigrants):
 	
 	if not hasattr(functions,'mutate'):
 		raise MissingFunction("No 'mutate' function in 'functions'.")
@@ -21,7 +21,7 @@ def ga(population,functions,generations,nsurvive):
 	population_size = len(population)
 	for seq in population:
 		seq.fitness = functions.evaluate_fitness(seq)
-	for i in range(generations):
+	for _ in range(generations):
 		stat.add(population)
 		best_seqs = functions.find_best(population,nsurvive)
 		population = best_seqs
@@ -36,5 +36,8 @@ def ga(population,functions,generations,nsurvive):
 					0.1)
 			)
 			population[len(population)-1].fitness = functions.evaluate_fitness(population[len(population)-1])
+		population.extend(functions.generate_immigrants(nimmigrants))
+		for i in range(nimmigrants):
+			population[population_size + i].fitness = functions.evaluate_fitness(population[population_size+1])
 	stat.show()
 	return population

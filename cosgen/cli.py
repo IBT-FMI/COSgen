@@ -24,7 +24,7 @@ from os.path import expanduser
 from functools import partial
 import numpy as np
 
-def cli_algorithm(population_size=20, library_size=10, storage_path='~/.cosgen/sequences', seqlength=10, nstimtypes=1, generations=10000, survivors=5, hrflength=10):
+def cli_algorithm(population_size=20, library_size=10, storage_path='~/.cosgen/sequences', seqlength=100, nstimtypes=1, generations=10000, survivors=5, hrflength=10,nimmigrants=4):
 	storage_path = expanduser(storage_path)
 	fcts = FunctionCrate()
 #	def design_mat(x):
@@ -45,9 +45,10 @@ def cli_algorithm(population_size=20, library_size=10, storage_path='~/.cosgen/s
 #	fcts.add_fitness_measure('test', fitness_measures.test)
 	fcts.set_mutate(mutate)
 	fcts.set_cross_over(cross_over)
-	fcts.set_generate_immigrants(generate_immigrants)
-	population = [Sequence(seqlength,nstimtypes) for i in range(population_size)]
-	population = ga(population,fcts,generations,survivors)
+	fcts.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=10))
+	population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
+	population.append(Sequence(seqlength,nstimtypes,'block',block_size=10))
+	population = ga(population,fcts,generations,survivors,nimmigrants)
 	for seq in fcts.find_best(population,library_size):
 		#seq.dump(storage_path)
 		print(seq.l)
