@@ -11,15 +11,18 @@ class Sequence:
 		self.fitness = None
 		self.nstimtypes = nstimtypes
 		if l is not None:
-			self.l = l
+			self.l = np.array(l)
 			self.seqlen = len(l)
-			self.nstimtypes = len(set(l))-1
+			if self.nstimtypes == 1:
+				self.nstimtypes = len(set(l))-1
+			if self.nstimtypes == 0:	#if list only containes 0 events assume nstimtypes is 1
+				self.nstimtypes = 1
 		elif seqtype=='random':
 			self.l = np.random.randint(nstimtypes+1,size=seqlen)
 			self.seqlen = seqlen
 		elif seqtype=='block':
 			if block_size < 0 or seqlen % block_size != 0:
-				raise BlockSizeError('block_size must be a positive devisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
+				raise BlockSizeError('block_size must be a positive divisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
 			self.l = np.empty(seqlen)
 			position=0
 			while position<seqlen:
