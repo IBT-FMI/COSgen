@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.special
+from matplotlib import pyplot as plt
 
 class Model:
 
@@ -28,10 +29,11 @@ class EstimationModel(Model):
 	def design_matrix(self, sequence):
 		lb = len(self.basis_set)
 		Xconv = np.empty(( len(sequence.l) + len(self.basis_set[0]) - 1, sequence.nstimtypes * lb ))
+		Xconv = Xconv/Xconv.max()
 		for i in range(1, sequence.nstimtypes+1):
 			for j in range(lb):
 				Xconv[:, lb * (i-1) + j] = np.convolve(sequence.l == i, self.basis_set[j])
-		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[range(len(Xconv)),Xconv]]) #add base line and linear trend/drift
+		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(0,1,len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
 		#This is only for pre-whitening and not precoloring
@@ -52,7 +54,8 @@ class DetectionModel(Model):
 	def design_matrix(self, sequence):
 		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
 		Xconv = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=X))
-		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[range(len(Xconv)),Xconv]]) #add base line and linear trend/drift
+		Xconv = Xconv/Xconv.max()
+		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(0,1,len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
 		#This is only for pre-whitening and not precoloring
@@ -81,7 +84,7 @@ def get_ICA_basis_set(TR,length,order):
 	pass
 
 def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
-	t = np.array(range(0,length*TR,TR))
+	t = np.linspace(0,(length-1)*TR,length)
 	const1 = b1^(a1+1)
 	const2 = b2^(a2+1)
 	denom1 = scipy.special.gamma(a1+1)
@@ -91,3 +94,6 @@ def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
 def get_ar1_cov(dim,phi):
 	return np.matrix(np.fromfunction(lambda i, j: phi**np.abs(i-j), (dim, dim)))
 
+def plot_design_matrix(mat):
+	plt.imshow(mat, cmap='gray')
+	plt.show()
