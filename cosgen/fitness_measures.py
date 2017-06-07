@@ -17,6 +17,3 @@ def estimator_variance(sequence, model, optimality, contrast=None):
 		return np.linalg.det(covariance_beta)
 	else:
 		raise OptimalityError('Unknow optimality {0}. Possible choices are "a","d"'.format(optimality))
-
-def test(sequence):
-	return sum(sequence.l)
