@@ -54,13 +54,23 @@ class DetectionModel(Model):
 	def design_matrix(self, sequence):
 		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
 		Xconv = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=X))
-		Xconv = Xconv/Xconv.max()
+		Xconvmax = Xconv.max()
+		if Xconvmax != 0:
+			Xconv = Xconv/Xconvmax
 		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(0,1,len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
 		#This is only for pre-whitening and not precoloring
 		Z = self.whitening_mat*X
-		Zpinv = np.linalg.pinv(Z)
+		try:
+			Zpinv = np.linalg.pinv(Z)
+		except np.linalg.linalg.LinAlgError:
+			print('X:')
+			print(X)
+			print('K:')
+			print(self.whitening_mat)
+			print('Z:')
+			print(Z)
 		return Zpinv * np.transpose(Zpinv)	
 
 
