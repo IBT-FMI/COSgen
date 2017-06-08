@@ -1,14 +1,9 @@
 import numpy as np
 
-try:
-	from cosgen.statistics import Statistics
-except ImportError:
-	from statistics import Statistics
-
 class MissingFunction(Exception):
 	pass
 
-def ga(population,functions,generations,nsurvive,nimmigrants):
+def ga(population,functions,generations,nsurvive,nimmigrants,stat):
 	
 	if not hasattr(functions,'mutate'):
 		raise MissingFunction("No 'mutate' function in 'functions'.")
@@ -17,7 +12,6 @@ def ga(population,functions,generations,nsurvive,nimmigrants):
 	if len(functions.fitness_measures) == 0:
 		raise MissingFunction("No fitness measures in 'functions'.")
 
-	stat = Statistics()
 	population_size = len(population)
 	for seq in population:
 		seq.fitness = functions.evaluate_fitness(seq)

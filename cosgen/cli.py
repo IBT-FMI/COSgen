@@ -9,6 +9,7 @@ try:
 	from cosgen.cross_over import cross_over
 	from cosgen.immigrants import generate_immigrants
 	import cosgen.models as models
+	from cosgen.statistics import Statistics
 except ImportError:
 	from function_crate import FunctionCrate
 	from algorithms import ga
@@ -18,14 +19,30 @@ except ImportError:
 	from cross_over import cross_over
 	from immigrants import generate_immigrants
 	import models
+	from statistics import Statistics
 
 import argh
-from os.path import expanduser
+import os.path
+import os
 from functools import partial
+import datetime
 import numpy as np
 
-def cli_algorithm(population_size=20, library_size=10, storage_path='~/.cosgen/sequences', seqlength=100, nstimtypes=1, generations=10000, survivors=5, hrflength=30,nimmigrants=4):
-	storage_path = expanduser(storage_path)
+def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, hrflength=30,nimmigrants=4):
+
+	storage_path = os.path.expanduser(storage_path)
+	storage_path = os.path.join(storage_path,'{:%Y%m%d%H%M%S}'.format(datetime.datetime.now()))
+	os.makedirs(storage_path, exist_ok=True)
+	with open(os.path.join(storage_path,'parameters.txt'),'w+') as f:
+		f.write('Population size = '+str(population_size)+'\n')
+		f.write('Library size = '+str(library_size)+'\n')
+		f.write('Sequence length = '+str(seqlength)+'\n')
+		f.write('Number of stimulus types = '+str(nstimtypes)+'\n')
+		f.write('Number of generations = '+str(generations)+'\n')
+		f.write('Number of survivors = '+str(survivors)+'\n')
+		f.write('HRF length = '+str(hrflength)+'\n')
+		f.write('Number of immigrants = '+str(nimmigrants)+'\n')
+
 	fcts = FunctionCrate()
 #	def design_mat(x):
 #		return np.diag(x.l)
@@ -45,12 +62,13 @@ def cli_algorithm(population_size=20, library_size=10, storage_path='~/.cosgen/s
 	fcts.set_mutate(mutate)
 	fcts.set_cross_over(cross_over)
 	fcts.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=10))
+	statistics = Statistics(storage_path)
 	population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
 	population.append(Sequence(seqlength,nstimtypes,'block',block_size=10))
-	population = ga(population,fcts,generations,survivors,nimmigrants)
+	population = ga(population,fcts,generations,survivors,nimmigrants,statistics)
 	for seq in fcts.find_best(population,library_size):
-		#seq.dump(storage_path)
-		print(seq.l)
+		seq.dump(os.path.join(storage_path,'sequences.txt'))
+		print(seq.l, seq.fitness)
 
 def main():
 	argh.dispatch_command(cli_algorithm)

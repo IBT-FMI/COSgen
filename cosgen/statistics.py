@@ -2,9 +2,11 @@ from matplotlib import pyplot as plt
 import numpy as np
 import warnings
 from scipy.spatial.distance import hamming
+import os.path
 
 class Statistics:
-	def __init__(self):
+	def __init__(self,storage_path):
+		self.storage_path = storage_path
 		self.max_fitness = []
 		self.average_fitness = []
 		self.population_diversity = []
@@ -35,4 +37,4 @@ class Statistics:
 		axarr[1].set_title('Average fitness')
 		axarr[2].plot(self.population_diversity)
 		axarr[2].set_title('Population diversity')
-		plt.show()
+		plt.savefig(os.path.join(self.storage_path,'stats.pdf'))

@@ -1,4 +1,3 @@
-import datetime
 import numpy as np
 import os
 import random
@@ -31,10 +30,9 @@ class Sequence:
 		elif seqtype=='m':
 			pass
 	def dump(self, path):
-		os.makedirs(path, exist_ok=True)
-		path = path + '/{:%Y%m%d%H%M%S}.tsv'.format(datetime.datetime.now())
-		with open(path,'w+') as f:
-			f.write('hello')
+		with open(path,'a+') as f:
+			f.write('Sequence: '+str(self.l)+'\n')
+			f.write('Fitness: '+str(self.fitness)+'\n')
 
 def estimate_optimal_block_size(hrf,seqlen):
 	#returns an estimate for the optimal value of a block design in multiples of TR (if hrf has not enough sample points this might not work properly?)
