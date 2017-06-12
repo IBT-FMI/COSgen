@@ -34,7 +34,7 @@ class Sequence:
 			f.write('Sequence: '+str(self.l)+'\n')
 			f.write('Fitness: '+str(self.fitness)+'\n')
 
-def estimate_optimal_block_size(hrf,seqlen):
+def estimate_optimal_block_size(hrf):
 	#returns an estimate for the optimal value of a block design in multiples of TR (if hrf has not enough sample points this might not work properly?)
 	ft_hrf = np.absolute(np.fft.rfft(hrf))
 	ft_freq = np.fft.rfftfreq(hrf.size)
