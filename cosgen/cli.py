@@ -50,7 +50,7 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 #		return np.identity(len(x[0]))
 #	model = models.Model(design_mat, cov_mat)
 	gamma_hrf = models.get_gamma_hrf(1,hrflength,5,1,15,1,6)
-	ar1_cov = models.get_ar1_cov(seqlength+hrflength-1,0.5)
+	ar1_cov = models.get_ar1_cov(seqlength,0.5)
 #	import math
 #	gamma_hrf = np.zeros(40)
 #	gamma_hrf[0:len(gamma_hrf):2]=1
@@ -67,7 +67,7 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 	population.append(Sequence(seqlength,nstimtypes,'block',block_size=10))
 	population = ga(population,fcts,generations,survivors,nimmigrants,statistics)
 	for seq in fcts.find_best(population,library_size):
-		seq.dump(os.path.join(storage_path,'sequences.txt'))
+		seq.dump(storage_path)
 		print(seq.l, seq.fitness)
 
 def main():
