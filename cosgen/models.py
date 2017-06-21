@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.linalg
 import scipy.special
 from matplotlib import pyplot as plt
 
@@ -28,11 +29,14 @@ class EstimationModel(Model):
 
 	def design_matrix(self, sequence):
 		lb = len(self.basis_set)
-		Xconv = np.empty(( len(sequence.l) + len(self.basis_set[0]) - 1, sequence.nstimtypes * lb ))
-		Xconv = Xconv/Xconv.max()
+		ls = len(sequence.l)
+		Xconv = np.empty(( ls , sequence.nstimtypes * lb ))
 		for i in range(1, sequence.nstimtypes+1):
 			for j in range(lb):
-				Xconv[:, lb * (i-1) + j] = np.convolve(sequence.l == i, self.basis_set[j])
+				Xconv[:, lb * (i-1) + j] = np.convolve(sequence.l == i, self.basis_set[j])[0:ls]
+		Xconvmax = Xconv.max()
+		if Xconvmax != 0:
+			Xconv = Xconv/Xconv.max()
 		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(0,1,len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
@@ -52,8 +56,9 @@ class DetectionModel(Model):
 			self.whitening_mat = np.linalg.inv(L)
 
 	def design_matrix(self, sequence):
+		ls = len(sequence.l)
 		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
-		Xconv = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf), axis=1, arr=X))
+		Xconv = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf)[0:ls], axis=1, arr=X))
 		Xconvmax = Xconv.max()
 		if Xconvmax != 0:
 			Xconv = Xconv/Xconvmax
@@ -103,6 +108,9 @@ def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
 
 def get_ar1_cov(dim,phi):
 	return np.matrix(np.fromfunction(lambda i, j: phi**np.abs(i-j), (dim, dim)))
+
+def get_autocorr_whitening_mat(acf):
+	return np.linalg.inv(np.linalg.cholesky(scipy.linalg.toeplitz(acf)))
 
 def plot_design_matrix(mat):
 	plt.imshow(mat, cmap='gray')
