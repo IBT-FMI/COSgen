@@ -30,7 +30,8 @@ class Sequence:
 		elif seqtype=='m':
 			pass
 	def dump(self, path):
-		with open(path,'a+') as f:
+		np.save(os.path.join(path,'sequence.npy'),self.l)
+		with open(os.path.join(path,'sequence.txt'),'a+') as f:
 			f.write('Sequence: '+str(self.l)+'\n')
 			f.write('Fitness: '+str(self.fitness)+'\n')
 
