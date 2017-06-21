@@ -1,10 +1,44 @@
+"""This file contains the genetic algorithm. Any extra algorithms should
+be added in this file. """
+
 import numpy as np
 
 class MissingFunction(Exception):
+	"""
+	Error raised if the function crate passed to 'ga' as 'functions'
+	does not contain all necessary functions for the execution of the
+	genetic algorithm.
+	"""
 	pass
 
 def ga(population,functions,generations,nsurvive,nimmigrants,stat):
-	
+	"""
+	Run genetic algorithm.
+
+	This function runs a genetic algorithm on a population with the
+	given arguments.
+
+	Paraments
+	---------
+	population : list of cosgen.sequence.Sequence objects
+	    Initial population.
+	functions : cosgen.function_crate.FunctionCrate object
+	    This object has to have at least a mutate and cross_over
+	    function as well as one fitness measure.
+	generations : int
+	    Number of generations(iterations) of the genetic algorithm.
+	nsurvive : int
+	    Number of survivors after each generation.
+	nimmigrants : int
+	    Number of immigrants in each generation.
+	stat : cosgen.statistics.Statistics object
+	    Logs properties of population over generations.
+
+	Returns
+	-------
+	population : list of cosgen.sequence.Sequence objects
+	    Population after genetic algorithm.
+	"""
 	if not hasattr(functions,'mutate'):
 		raise MissingFunction("No 'mutate' function in 'functions'.")
 	if not hasattr(functions,'cross_over'):
