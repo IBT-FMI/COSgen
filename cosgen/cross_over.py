@@ -1,3 +1,5 @@
+"""This file contains the cross_over function. Any extra cross over
+functions should be added in this file."""
 try:
 	import cosgen.sequence as sequence
 except ImportError:
@@ -6,7 +8,23 @@ except ImportError:
 import random
 import numpy as np
 
-def cross_over(sequence1, sequence2, mutation_rate=0.3):
+def cross_over(sequence1, sequence2):
+	"""
+	Create offspring of sequence1 and sequence2.
+
+	This function creats and offspring of sequence1 and sequence2 by
+	cutting them at a random point and merging the two ends.
+
+	Parameters
+	----------
+	sequence1 : cosgen.sequence.Sequence
+	sequence2 : cosgen.sequence.Sequence
+
+	Returns
+	-------
+	cosgen.sequence.Sequence
+	    Offspring for the two sequences given.
+	"""
 	length = min(len(sequence1.l),len(sequence2.l))
 	r = random.randrange(length)
 	l = np.append(sequence1.l[:r],sequence2.l[r:])

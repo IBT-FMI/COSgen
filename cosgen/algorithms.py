@@ -67,5 +67,5 @@ def ga(population,functions,generations,nsurvive,nimmigrants,stat):
 		population.extend(functions.generate_immigrants(nimmigrants))
 		for i in range(nimmigrants):
 			population[population_size + i].fitness = functions.evaluate_fitness(population[population_size+1])
-	stat.show()
+	stat.gen_plot()
 	return population
