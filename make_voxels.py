@@ -2,7 +2,7 @@
 
 import numpy as np
 
-vox = np.zeros((1000,3))
+vox = np.zeros((1000,3),dtype=int)
 
 idx = 0
 for i in range(25,35):
