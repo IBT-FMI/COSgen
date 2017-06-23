@@ -5,7 +5,7 @@ import argh
 import os.path
 import numpy as np
 
-def main(source,destination,sequence,hrf,voxels,scale=1):
+def main(source,destination,sequence,hrf,voxels,scale=1000):
 	seq = np.load(sequence)
 	hrf = np.load(hrf)
 	conv = np.convolve(seq,hrf)
