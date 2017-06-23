@@ -28,7 +28,7 @@ from functools import partial
 import datetime
 import numpy as np
 
-def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, hrflength=30,nimmigrants=4):
+def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1):
 
 	storage_path = os.path.expanduser(storage_path)
 	storage_path = os.path.join(storage_path,'{:%Y%m%d%H%M%S}'.format(datetime.datetime.now()))
@@ -40,8 +40,9 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 		f.write('Number of stimulus types = '+str(nstimtypes)+'\n')
 		f.write('Number of generations = '+str(generations)+'\n')
 		f.write('Number of survivors = '+str(survivors)+'\n')
-		f.write('HRF length = '+str(hrflength)+'\n')
 		f.write('Number of immigrants = '+str(nimmigrants)+'\n')
+		f.write('HRF length = '+str(hrflength)+'\n')
+		f.write('TR = '+str(TR))
 
 	fcts = FunctionCrate()
 #	def design_mat(x):
@@ -49,7 +50,7 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 #	def cov_mat(x):
 #		return np.identity(len(x[0]))
 #	model = models.Model(design_mat, cov_mat)
-	gamma_hrf = models.get_gamma_hrf(1,hrflength,5,1,15,1,6)
+	gamma_hrf = models.get_gamma_hrf(TR,hrflength,5,1,15,1,6)
 	ar1_cov = models.get_ar1_cov(seqlength,0.5)
 #	import math
 #	gamma_hrf = np.zeros(40)
@@ -66,8 +67,8 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 	population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
 	population.append(Sequence(seqlength,nstimtypes,'block',block_size=10))
 	population = ga(population,fcts,generations,survivors,nimmigrants,statistics)
-	for seq in fcts.find_best(population,library_size):
-		seq.dump(storage_path)
+	for i,seq in enumerate(fcts.find_best(population,library_size)):
+		seq.dump(storage_path,index=i,TR=TR)
 		print(seq.l, seq.fitness)
 
 def main():

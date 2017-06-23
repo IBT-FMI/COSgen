@@ -33,7 +33,7 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_
 	    List of sequence according to parameters.
 	"""
 	imigrants = []
-	for i in range(nimigrants):
+	for i in range(nimmigrants):
 		randseq = sequence.Sequence(seqlen, nstimtypes, seqtype='random')
 		blockseq = sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size)
 		seq = cross_over_fct(randseq, blockseq)

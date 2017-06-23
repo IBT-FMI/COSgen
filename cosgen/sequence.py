@@ -29,11 +29,22 @@ class Sequence:
 				position += block_size
 		elif seqtype=='m':
 			pass
-	def dump(self, path):
-		np.save(os.path.join(path,'sequence.npy'),self.l)
-		with open(os.path.join(path,'sequence.txt'),'a+') as f:
-			f.write('Sequence: '+str(self.l)+'\n')
-			f.write('Fitness: '+str(self.fitness)+'\n')
+	def dump(self, path, index=0, TR=1):
+		np.save(os.path.join(path,'sequence'+str(index)+'.npy'),self.l)
+		with open(os.path.join(path,'sequence'+str(index)+'.tsv'),'w+') as f:
+			f.write('onset\tduration\tstimulation_frequency\n')
+			start=-1
+			for i in range(self.seqlen):
+				if self.l[i] != 0 and start<0:
+					start = i
+					f.write(str(i*TR)+'\t')
+				elif self.l[i] == 0 and start>=0:
+					f.write(str((i-start)*TR)+'\t20.0\n')
+					start = -1
+			if self.l[self.seqlen-1] != 0:
+				f.write(str((self.seqlen-start)*TR)+'\t20.0\n')
+			#f.write('Sequence: '+str(self.l)+'\n')
+			#f.write('Fitness: '+str(self.fitness)+'\n')
 
 def estimate_optimal_block_size(hrf):
 	#returns an estimate for the optimal value of a block design in multiples of TR (if hrf has not enough sample points this might not work properly?)
