@@ -6,10 +6,10 @@ import os.path
 import numpy as np
 
 def main(source,destination,sequence,hrf,voxels,scale=1000):
-	seq = np.load(sequence)
+	seq = np.load(sequence)/scale
 	hrf = np.load(hrf)
 	conv = np.convolve(seq,hrf)
-	func_data = conv/conv.max()/scale
+	func_data = conv
 	roi = nib.load(voxels)
 	vox = np.nonzero(roi.get_data())
 	img = nib.load(os.path.expanduser(source))
