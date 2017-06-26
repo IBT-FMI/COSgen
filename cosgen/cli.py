@@ -32,7 +32,13 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 
 	storage_path = os.path.expanduser(storage_path)
 	storage_path = os.path.join(storage_path,'{:%Y%m%d%H%M%S}'.format(datetime.datetime.now()))
-	os.makedirs(storage_path, exist_ok=True)
+	try:
+		os.makedirs(storage_path)
+	except OSError as exc:
+		if exc.errno == errno.EEXIST and os.path.isdir(path):
+			pass
+		else:
+			raise
 	with open(os.path.join(storage_path,'parameters.txt'),'w+') as f:
 		f.write('Population size = '+str(population_size)+'\n')
 		f.write('Library size = '+str(library_size)+'\n')
