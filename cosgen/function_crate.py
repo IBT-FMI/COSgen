@@ -217,12 +217,20 @@ class FunctionCrate:
 		"""
 		if hasattr(self,'generate_immigrants'):
 			raise OverwriteAttrError('Use del_generate_immigrants before setting a new generate immigrants')
-		if 'cross_over_fct' in (inspect.getfullargspec(function).args + inspect.getfullargspec(function).kwonlyargs):
-			if not hasattr(self, 'cross_over'):
-				raise WrongOrderError('cross_over function has to be set before set_generate_imigrants can be used')
-			setattr(self,'generate_immigrants', partial(function,cross_over_fct=self.cross_over))
-		else:
-			setattr(self,'generate_immigrants', function)
+		try:
+			if 'cross_over_fct' in (inspect.getfullargspec(function).args + inspect.getfullargspec(function).kwonlyargs):
+				if not hasattr(self, 'cross_over'):
+					raise WrongOrderError('cross_over function has to be set before set_generate_imigrants can be used')
+				setattr(self,'generate_immigrants', partial(function,cross_over_fct=self.cross_over))
+			else:
+				setattr(self,'generate_immigrants', function)
+		except AttributeError:
+			if 'cross_over_fct' in inspect.getargspec(function.func).args:
+				if not hasattr(self, 'cross_over'):
+					raise WrongOrderError('cross_over function has to be set before set_generate_imigrants can be used')
+				setattr(self,'generate_immigrants', partial(function,cross_over_fct=self.cross_over))
+			else:
+				setattr(self,'generate_immigrants', function)
 
 	def del_generate_immigrants(self):
 		"""
