@@ -278,5 +278,6 @@ def get_autocorr_whitening_mat(acf):
 	return np.linalg.inv(np.linalg.cholesky(scipy.linalg.toeplitz(acf)))
 
 def plot_design_matrix(mat):
-	plt.imshow(mat, cmap='gray')
+	a = int(mat.shape[0]/mat.shape[1])
+	plt.imshow(np.repeat(mat,a,axis=1), cmap='gray')
 	plt.show()
