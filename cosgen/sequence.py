@@ -20,13 +20,16 @@ class Sequence:
 			self.l = np.random.randint(nstimtypes+1,size=seqlen)
 			self.seqlen = seqlen
 		elif seqtype=='block':
+			if block_size is None:
+				raise BlockSizeError("block_size must be set if seqtype is 'block'")
 			if block_size < 0 or seqlen % block_size != 0:
 				raise BlockSizeError('block_size must be a positive divisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
 			self.l = np.empty(seqlen)
 			position=0
 			while position<seqlen:
-				self.l[position:position+block_size] = random.randint(0,nstimtypes)
-				position += block_size
+				self.l[position:position+block_size] = random.randint(1,nstimtypes)
+				self.l[position+block_size:position+2*block_size] = 0
+				position += 2*block_size
 		elif seqtype=='m':
 			pass
 	def dump(self, path, index=0, TR=1):
@@ -51,4 +54,4 @@ def estimate_optimal_block_size(hrf):
 	ft_hrf = np.absolute(np.fft.rfft(hrf))
 	ft_freq = np.fft.rfftfreq(hrf.size)
 	idx = np.argmax(ft_hrf)
-	return 1./ft_freq[idx]
+	return int(1./ft_freq[idx])
