@@ -22,7 +22,8 @@ def estimator_variance(sequence, model, optimality, contrast=None):
 	optimality : string
 	    Can be 'a' for a-optimality (trace) or 'd' for d-optimality
 	    (determinat).
-
+	contrast : numpy matrix
+	    Matrix containing contrast vectors as rows.
 	Retruns
 	-------
 	float
@@ -33,7 +34,7 @@ def estimator_variance(sequence, model, optimality, contrast=None):
 	covariance_beta = model.cov_beta(X)
 
 	if contrast is not None:
-		covariance_beta = np.dot(contrast,np.dot(covariance_beta,contrast.transpose()))
+		covariance_beta = contrast*covariance_beta*contrast.transpose()
 	if optimality=='a':
 		return np.trace(covariance_beta)
 	elif optimality=='d':
