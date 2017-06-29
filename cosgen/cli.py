@@ -62,7 +62,10 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 #	gamma_hrf = np.zeros(40)
 #	gamma_hrf[0:len(gamma_hrf):2]=1
 #	ar1_cov = np.identity(139)
-	model = models.DetectionModel(gamma_hrf,err_cov_mat=ar1_cov)
+	extra_evs = np.empty((seqlength,2))
+	extra_evs[:,0]=np.ones(seqlength)
+	extra_evs[:,1]=np.linspace(-0.5,0.5,seqlength)
+	model = models.DetectionModel(gamma_hrf, err_cov_mat=ar1_cov, filterfunc=partial(models.gaussian_highpass,sigma=225),extra_evs=extra_evs)
 #	basis_set = models.get_FIR_basis_set(hrflength)
 #	model = models.EstimationModel(basis_set,err_cov_mat=ar1_cov)
 	fcts.add_fitness_measure('cov',partial(fitness_measures.estimator_variance,model=model,optimality='a'))

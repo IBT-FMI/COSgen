@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.linalg
 import scipy.special
+from scipy import signal
+from scipy.ndimage.filters import gaussian_filter1d
 from matplotlib import pyplot as plt
 
 class Model:
@@ -71,7 +73,7 @@ class Model:
 
 class EstimationModel(Model):
 
-	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None):
+	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x):
 		"""
 		This class implements a model for estimating the hrf.
 
@@ -89,6 +91,7 @@ class EstimationModel(Model):
 		    Error covariance matrix.
 		"""
 		self.basis_set = basis_set
+		self.filterfunc = filterfunc
 		if whitening_mat is not None:
 			self.whitening_mat = whitening_mat
 		elif err_cov_mat is not None:
@@ -119,11 +122,11 @@ class EstimationModel(Model):
 		Xconv = np.empty(( ls , sequence.nstimtypes * lb ))
 		for i in range(1, sequence.nstimtypes+1):
 			for j in range(lb):
-				Xconv[:, lb * (i-1) + j] = np.convolve(sequence.l == i, self.basis_set[j])[0:ls]
+				Xconv[:, lb * (i-1) + j] = self.filterfunc(np.convolve(sequence.l == i, self.basis_set[j])[0:ls])
 		Xconvmax = Xconv.max()
 		if Xconvmax != 0:
 			Xconv = Xconv/Xconv.max()
-		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(0,1,len(Xconv)),Xconv]]) #add base line and linear trend/drift
+		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(-0.5,0.5,len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
 		"""
@@ -158,7 +161,7 @@ class EstimationModel(Model):
 
 class DetectionModel(Model):
 
-	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None):
+	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, extra_evs=None):
 		"""
 		This class implements a model for detecting specific 
 		constrasts for a given/known hrf.
@@ -177,6 +180,7 @@ class DetectionModel(Model):
 		    Error covariance matrix.
 		"""
 		self.hrf = hrf
+		self.filterfunc = filterfunc
 		if whitening_mat is not None:
 			self.whitening_mat = whitening_mat
 		elif err_cov_mat is not None:
@@ -184,6 +188,11 @@ class DetectionModel(Model):
 			self.whitening_mat = np.linalg.inv(L)
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
+		if extra_evs is None:
+			self.extra_evs = np.array([[]])
+		else:
+			self.extra_evs = extra_evs
+		self.n_extra_evs = self.extra_evs.shape[1]
 
 	def design_matrix(self, sequence):
 		"""
@@ -205,12 +214,12 @@ class DetectionModel(Model):
 		    Design matrix.
 		"""
 		ls = len(sequence.l)
+		DM = np.empty((ls,self.n_extra_evs+sequence.nstimtypes))
+		DM[:,0:self.n_extra_evs]=self.extra_evs
 		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
-		Xconv = np.transpose(np.apply_along_axis(lambda m: np.convolve(m,self.hrf)[0:ls], axis=1, arr=X))
-		Xconvmax = Xconv.max()
-		if Xconvmax != 0:
-			Xconv = Xconv/Xconvmax
-		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(0,1,len(Xconv)),Xconv]]) #add base line and linear trend/drift
+		DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(np.convolve(m,self.hrf)[0:ls])), axis=1, arr=X))
+		return DM
+		#return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(-0.5,0.5,len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
 		"""
@@ -281,3 +290,18 @@ def plot_design_matrix(mat):
 	a = int(mat.shape[0]/mat.shape[1])
 	plt.imshow(np.repeat(mat,a,axis=1), cmap='gray')
 	plt.show()
+
+def orthogonalize(A,v):
+	if A.shape[1] == 0:
+		print('Not orthogonalized!')
+		return v
+	v = v - A[:,0].dot(v)/A[:,0].dot(A[:,0]) * A[:,0]
+	if A.shape[1] > 1:
+		return orthogonalize(A[:,1:],v)
+	else:
+		return v
+	#coef = A.transpose().dot(v)/np.linalg.norm(A,axis=0)
+	#return v - A.dot(coef)
+
+def gaussian_highpass(data,sigma=225):
+	return data - gaussian_filter1d(data,sigma)
