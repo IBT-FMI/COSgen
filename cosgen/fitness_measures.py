@@ -36,8 +36,8 @@ def estimator_variance(sequence, model, optimality, contrast=None):
 	if contrast is not None:
 		covariance_beta = contrast*covariance_beta*contrast.transpose()
 	if optimality=='a':
-		return np.trace(covariance_beta)
+		return 1./np.trace(covariance_beta)
 	elif optimality=='d':
-		return np.linalg.det(covariance_beta)
+		return 1./np.linalg.det(covariance_beta)
 	else:
 		raise OptimalityError('Unknow optimality {0}. Possible choices are "a","d"'.format(optimality))
