@@ -22,13 +22,13 @@ class Sequence:
 		elif seqtype=='block':
 			if block_size is None:
 				raise BlockSizeError("block_size must be set if seqtype is 'block'")
-			if block_size < 0 or seqlen % block_size != 0:
-				raise BlockSizeError('block_size must be a positive divisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
+			#if block_size < 0 or seqlen % block_size != 0:
+			#	raise BlockSizeError('block_size must be a positive divisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
 			self.l = np.empty(seqlen)
 			position=0
 			while position<seqlen:
-				self.l[position:position+block_size] = random.randint(1,nstimtypes)
-				self.l[position+block_size:position+2*block_size] = 0
+				self.l[position:min(position+block_size,seqlen)] = random.randint(1,nstimtypes)
+				self.l[position+block_size:min(position+2*block_size,seqlen)] = 0
 				position += 2*block_size
 		elif seqtype=='m':
 			pass
