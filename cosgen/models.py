@@ -288,7 +288,12 @@ def get_autocorr_whitening_mat(acf):
 
 def plot_design_matrix(mat):
 	a = int(mat.shape[0]/mat.shape[1])
+	fig, ax = plt.subplots(1)
 	plt.imshow(np.repeat(mat,a,axis=1), cmap='gray')
+	plt.title('Design matrix')
+	ax.set_ylabel('time course [TR]')
+	ax.set_xlabel('Regressors')
+	ax.set_xticklabels([])
 	plt.show()
 
 def orthogonalize(A,v):
