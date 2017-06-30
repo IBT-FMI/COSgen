@@ -31,21 +31,40 @@ class Sequence:
 				self.l[position+block_size:min(position+2*block_size,seqlen)] = 0
 				position += 2*block_size
 		elif seqtype=='m':
+			#TODO implement m sequences
 			pass
+
+	def get_block_representation(self):
+		result = []
+		start = -1
+		for i in range(self.seqlen):
+			if self.l[i] != 0 and start<0:
+				start = i
+			elif self.l[i] == 0 and start>=0:
+				result.append([start, i])
+				start = -1
+		if self.l[self.seqlen-1] != 0:
+			result.append([start, self.seqlen])
+		return np.array(result)
+		
 	def dump(self, path, index=0, TR=1):
+		path = os.path.expanduser(path)
 		np.save(os.path.join(path,'sequence'+str(index)+'.npy'),self.l)
 		with open(os.path.join(path,'sequence'+str(index)+'.tsv'),'w+') as f:
 			f.write('onset\tduration\tstimulation_frequency\n')
-			start=-1
-			for i in range(self.seqlen):
-				if self.l[i] != 0 and start<0:
-					start = i
-					f.write(str(i*TR)+'\t')
-				elif self.l[i] == 0 and start>=0:
-					f.write(str((i-start)*TR)+'\t20.0\n')
-					start = -1
-			if self.l[self.seqlen-1] != 0:
-				f.write(str((self.seqlen-start)*TR)+'\t20.0\n')
+			blocks = self.get_block_representation()
+			for i in blocks:
+				f.write(str(i[0]*TR)+'\t'+str((i[1]-i[0])*TR)+'\t20.0\n')
+			#start=-1
+			#for i in range(self.seqlen):
+			#	if self.l[i] != 0 and start<0:
+			#		start = i
+			#		f.write(str(i*TR)+'\t')
+			#	elif self.l[i] == 0 and start>=0:
+			#		f.write(str((i-start)*TR)+'\t20.0\n')
+			#		start = -1
+			#if self.l[self.seqlen-1] != 0:
+			#	f.write(str((self.seqlen-start)*TR)+'\t20.0\n')
 			#f.write('Sequence: '+str(self.l)+'\n')
 			#f.write('Fitness: '+str(self.fitness)+'\n')
 
