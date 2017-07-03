@@ -71,4 +71,4 @@ statistics = Statistics(storage_path)
 population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
 population.append(Sequence(seqlength,nstimtypes,'block',block_size=blocksize))
 population = ga(population,fc,generations=10000,nsurvive=5,nimmigrants=4,stat=statistics)
-fc.find_best(population,1).dump(storage_path,TR=TR)
+fc.find_best(population,1)[0].dump(storage_path,TR=TR)
