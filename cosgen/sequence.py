@@ -25,6 +25,7 @@ class Sequence:
 			#if block_size < 0 or seqlen % block_size != 0:
 			#	raise BlockSizeError('block_size must be a positive divisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
 			self.l = np.empty(seqlen)
+			self.seqlen = seqlen
 			position=0
 			while position<seqlen:
 				self.l[position:min(position+block_size,seqlen)] = random.randint(1,nstimtypes)
