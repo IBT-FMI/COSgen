@@ -17,7 +17,7 @@ class Statistics:
 		storage_path : string
 		    Location where possible output is stored.
 		"""
-		self.storage_path = storage_path
+		self.storage_path = os.path.expanduser(storage_path)
 		self.max_fitness = []
 		self.average_fitness = []
 		self.population_diversity = []
