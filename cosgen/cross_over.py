@@ -18,7 +18,9 @@ def cross_over(sequence1, sequence2):
 	Parameters
 	----------
 	sequence1 : cosgen.sequence.Sequence
+	    Parent one.
 	sequence2 : cosgen.sequence.Sequence
+	    Parent two.
 
 	Returns
 	-------
