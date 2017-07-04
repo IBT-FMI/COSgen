@@ -20,10 +20,10 @@ TR = 1
 nstimtypes = 1
 population_size = 20
 
-hrf = np.load('hrf.npy')
+hrf = np.load('/home/wguest/hrf.npy')
 hrflength = len(hrf)
 
-ecm = models.get_ar1_cov(seqlength,0.3)	#ecm = estimator covariance matrix
+ecm = models.get_ar1_cov(seqlength,0.78)	#ecm = estimator covariance matrix
 whitening_mat = np.linalg.inv(np.linalg.cholesky(ecm))
 
 def design_matrix(sequence): 

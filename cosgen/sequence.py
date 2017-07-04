@@ -7,7 +7,7 @@ class BlockSizeError(Exception):
 
 class Sequence:
 	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, block_size=None):
-		self.fitness = None
+		self.fitness = np.nan
 		self.nstimtypes = nstimtypes
 		if l is not None:
 			self.l = np.array(l)
@@ -56,18 +56,6 @@ class Sequence:
 			blocks = self.get_block_representation()
 			for i in blocks:
 				f.write(str(i[0]*TR)+'\t'+str((i[1]-i[0])*TR)+'\t20.0\n')
-			#start=-1
-			#for i in range(self.seqlen):
-			#	if self.l[i] != 0 and start<0:
-			#		start = i
-			#		f.write(str(i*TR)+'\t')
-			#	elif self.l[i] == 0 and start>=0:
-			#		f.write(str((i-start)*TR)+'\t20.0\n')
-			#		start = -1
-			#if self.l[self.seqlen-1] != 0:
-			#	f.write(str((self.seqlen-start)*TR)+'\t20.0\n')
-			#f.write('Sequence: '+str(self.l)+'\n')
-			#f.write('Fitness: '+str(self.fitness)+'\n')
 
 def estimate_optimal_block_size(seqlen, fc):
 	blockseqs = [Sequence(seqlen,seqtype='block',block_size=i) for i in range(1,seqlen+1)]	
