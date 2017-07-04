@@ -72,24 +72,31 @@ class Model:
 
 
 class EstimationModel(Model):
+	"""
+	This class implements a model for estimating the hrf.
 
-	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x):
-		"""
-		This class implements a model for estimating the hrf.
+	The model employes pre-whitening to account for 
+	autocorrelation for the errors. Either 'whitening_mat or 
+	'err_cov_mat' must be given.
 
-		The model employes pre-whitening to account for 
-		autocorrelation for the errors. Either 'whitening_mat or 
-		'err_cov_mat' must be given.
+	Parameters
+	----------
+	basis_set : numpy array
+	    Array with hrf basis vetors as rows.
+	whitening_mat : numpy matrix, optional
+	    Whitening matrix.
+	err_cov_mat : numpy matrix, optional
+	    Error covariance matrix.
+	filterfunc : function
+	    Filter function takes numpy array as input and returns filtered 
+	    numpy array (c.f. :func:`~cosgen.models.gaussian_highpass`)
+	extra_evs : array-like object
+	    Extra explenatory variables in form of a 2D array-like object 
+	    with regressors as collumns. Shapes is 
+	    (number of extra evs, sequence length).
+	"""
 
-		Parameters
-		----------
-		basis_set : numpy array
-		    Array with hrf basis vetors as rows.
-		whitening_mat : numpy matrix, optional
-		    Whitening matrix.
-		err_cov_mat : numpy matrix, optional
-		    Error covariance matrix.
-		"""
+	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, extra_evs=None):
 		self.basis_set = basis_set
 		self.filterfunc = filterfunc
 		if whitening_mat is not None:
@@ -97,6 +104,13 @@ class EstimationModel(Model):
 		elif err_cov_mat is not None:
 			L = np.linalg.cholesky(err_cov_mat)
 			self.whitening_mat = np.linalg.inv(L)
+		else:
+			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
+		if extra_evs is None:
+			self.extra_evs = np.array([[]])
+		else:
+			self.extra_evs = extra_evs
+		self.n_extra_evs = self.extra_evs.shape[1]
 
 	def design_matrix(self, sequence):
 		"""
@@ -219,7 +233,6 @@ class DetectionModel(Model):
 		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
 		DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(np.convolve(m,self.hrf)[0:ls])), axis=1, arr=X))
 		return DM
-		#return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(-0.5,0.5,len(Xconv)),Xconv]]) #add base line and linear trend/drift
 
 	def cov_beta(self, X):
 		"""
@@ -297,6 +310,7 @@ def plot_design_matrix(mat):
 	plt.show()
 
 def orthogonalize(A,v):
+	"""A must contain already orthogonalized vector!!"""
 	if A.shape[1] == 0:
 		print('Not orthogonalized!')
 		return v
