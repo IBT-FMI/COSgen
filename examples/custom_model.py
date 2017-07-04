@@ -52,23 +52,26 @@ def cov_beta(X):
 		print('Z:')
 		print(Z)
 	return Zpinv * np.transpose(Zpinv)	
+def main():
+	model = models.Model(design_matrix,cov_beta)
 
-model = models.Model(design_matrix,cov_beta)
+	fc = FunctionCrate()
+	c = np.zeros(4)
+	c[0]=0
+	c[1]=0
+	c[2]=1
+	c[3]=0
+	fc.add_fitness_measure('est_var', partial(fitness_measures.estimator_variance, model=model, optimality='d', contrast=np.matrix(c)))
+	blocksize = estimate_optimal_block_size(seqlength, fc)
+	print('blocksize', blocksize)
+	fc.set_mutate(mutate)
+	fc.set_cross_over(cross_over)
+	fc.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=blocksize))
+	statistics = Statistics(storage_path)
+	population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
+	population.append(Sequence(seqlength,nstimtypes,'block',block_size=blocksize))
+	population = ga(population,fc,generations=10000,nsurvive=5,nimmigrants=4,stat=statistics)
+	fc.find_best(population,1)[0].dump(storage_path,TR=TR)
 
-fc = FunctionCrate()
-c = np.zeros(4)
-c[0]=0
-c[1]=0
-c[2]=1
-c[3]=0
-fc.add_fitness_measure('est_var', partial(fitness_measures.estimator_variance, model=model, optimality='d', contrast=np.matrix(c)))
-blocksize = estimate_optimal_block_size(seqlength, fc)
-print('blocksize', blocksize)
-fc.set_mutate(mutate)
-fc.set_cross_over(cross_over)
-fc.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=blocksize))
-statistics = Statistics(storage_path)
-population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
-population.append(Sequence(seqlength,nstimtypes,'block',block_size=blocksize))
-population = ga(population,fc,generations=10000,nsurvive=5,nimmigrants=4,stat=statistics)
-fc.find_best(population,1)[0].dump(storage_path,TR=TR)
+if __name__ == "__main__":
+	main()
