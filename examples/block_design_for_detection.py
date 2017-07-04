@@ -11,7 +11,7 @@ from matplotlib.widgets import Slider
 import functools
 from scipy.ndimage.filters import gaussian_filter1d
 
-seql = 1000
+seql = 1490
 
 hrf = np.load('hrf.npy')
 
