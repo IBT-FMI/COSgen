@@ -1,5 +1,6 @@
 """This file holds functions to mutate sequences."""
 import random
+import numpy as np
 
 class InvalidFractionError(Exception):
 	pass
@@ -32,4 +33,5 @@ def mutate(sequence,mutation_fraction):
 	idxs = random.sample(range(length),int(length*mutation_fraction))
 	for i in idxs:
 		sequence.l[i] = random.randrange(sequence.nstimtypes+1)
+	sequence.fitness = np.nan
 	return sequence

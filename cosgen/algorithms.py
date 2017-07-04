@@ -2,6 +2,7 @@
 be added in this file. """
 
 import numpy as np
+import math
 
 class MissingFunction(Exception):
 	"""
@@ -54,8 +55,8 @@ def ga(population,functions,generations,nsurvive,nimmigrants,stat):
 		best_seqs = functions.find_best(population,nsurvive)
 		population = best_seqs
 		p = np.array([s.fitness for s in best_seqs])
-		p = p/p.sum()
-		idxs = range(nsurvive)
+		p = p/p.sum() #probability for choosing sequence as parent
+		idxs = range(nsurvive) #indices for parent selection
 		for i in range(population_size-nsurvive):
 			parents = np.random.choice(idxs, 2, False, p)
 			population.append(
@@ -63,9 +64,9 @@ def ga(population,functions,generations,nsurvive,nimmigrants,stat):
 					functions.cross_over(best_seqs[parents[0]],best_seqs[parents[1]]),
 					0.1)
 			)
-			population[len(population)-1].fitness = functions.evaluate_fitness(population[len(population)-1])
 		population.extend(functions.generate_immigrants(nimmigrants))
-		for i in range(nimmigrants):
-			population[population_size + i].fitness = functions.evaluate_fitness(population[population_size+1])
+		for seq in population:
+			if math.isnan(seq.fitness):
+				seq.fitness = functions.evaluate_fitness(seq)
 	stat.gen_plot()
 	return population
