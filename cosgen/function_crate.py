@@ -94,7 +94,7 @@ class FunctionCrate:
 		n : int
 		    Number of sequences returned.
 
-		Retruns
+		Returns
 		-------
 		list of cosgen.sequence.Sequence
 		    List of best sequences.

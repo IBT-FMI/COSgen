@@ -44,7 +44,7 @@ class Model:
 		    Sequence for which the design matrix is to be 
 		    calculated.
 
-		Retruns
+		Returns
 		-------
 		design matrix
 		    Design matrix for the given sequence.
@@ -65,7 +65,7 @@ class Model:
 		    Design matrix for which the covariance matrix is to be
 		    calculated.
 
-		Retruns
+		Returns
 		-------
 		covarince matrix
 		    Covarnace matrix for the given design matrix.

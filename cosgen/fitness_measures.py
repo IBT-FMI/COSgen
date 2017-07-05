@@ -24,7 +24,7 @@ def estimator_variance(sequence, model, optimality, contrast=None):
 	    (determinat).
 	contrast : numpy matrix
 	    Matrix containing contrast vectors as rows.
-	Retruns
+	Returns
 	-------
 	float
 	    optimality value
