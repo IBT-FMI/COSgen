@@ -28,7 +28,7 @@ from functools import partial
 import datetime
 import numpy as np
 
-def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1):
+def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1, model_type='detection'):
 
 	storage_path = os.path.expanduser(storage_path)
 	storage_path = os.path.join(storage_path,'{:%Y%m%d%H%M%S}'.format(datetime.datetime.now()))
@@ -65,9 +65,11 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 	extra_evs = np.empty((seqlength,2))
 	extra_evs[:,0]=np.ones(seqlength)
 	extra_evs[:,1]=np.linspace(-0.5,0.5,seqlength)
-	model = models.DetectionModel(gamma_hrf, err_cov_mat=ar1_cov, filterfunc=partial(models.gaussian_highpass,sigma=225),extra_evs=extra_evs)
-#	basis_set = models.get_FIR_basis_set(hrflength)
-#	model = models.EstimationModel(basis_set,err_cov_mat=ar1_cov)
+	if model_type == 'detection':
+		model = models.DetectionModel(gamma_hrf, err_cov_mat=ar1_cov, filterfunc=partial(models.gaussian_highpass,sigma=225),extra_evs=extra_evs)
+	elif model_type == 'estimation':
+		basis_set = models.get_FIR_basis_set(hrflength)
+		model = models.EstimationModel(basis_set,err_cov_mat=ar1_cov)
 	fcts.add_fitness_measure('cov',partial(fitness_measures.estimator_variance,model=model,optimality='a'))
 	fcts.set_mutate(mutate)
 	fcts.set_cross_over(cross_over)
