@@ -33,7 +33,9 @@
 # ones.
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
-    'sphinxarg.ext']
+    'sphinxarg.ext',
+    'sphinxcontrib.programoutput',
+    'sphinx.ext.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -156,4 +158,4 @@ texinfo_documents = [
 ]
 
 
-
+default_role='any'

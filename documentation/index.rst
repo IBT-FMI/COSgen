@@ -10,7 +10,11 @@ Welcome to COSgen's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   COSgen
+   examples
+   cli
+   api
+   scripts
 
 Indices and tables
 ==================
