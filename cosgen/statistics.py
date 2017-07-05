@@ -1,7 +1,10 @@
 """This file holds everything related to logging the statistics of the
 population during execution of the genetic algorithm."""
 
-from matplotlib import pyplot as plt
+try:
+	from matplotlib import pyplot as plt
+except ImportError:
+	pass
 import numpy as np
 from scipy.spatial.distance import hamming
 import os.path
@@ -52,12 +55,20 @@ class Statistics:
 	def gen_plot(self):
 		"""
 		Generates plot and save it.
+		Add description of what happens if matplotlib is not there
 		"""
-		f, axarr = plt.subplots(3,sharex=True)
-		axarr[0].plot(self.max_fitness)
-		axarr[0].set_title('Max fitness')
-		axarr[1].plot(self.average_fitness)
-		axarr[1].set_title('Average fitness')
-		axarr[2].plot(self.population_diversity)
-		axarr[2].set_title('Population diversity')
-		plt.savefig(os.path.join(self.storage_path,'stats.pdf'))
+		try:
+			f, axarr = plt.subplots(3,sharex=True)
+			axarr[0].plot(self.max_fitness)
+			axarr[0].set_title('Max fitness')
+			axarr[1].plot(self.average_fitness)
+			axarr[1].set_title('Average fitness')
+			axarr[2].plot(self.population_diversity)
+			axarr[2].set_title('Population diversity')
+			plt.savefig(os.path.join(self.storage_path,'stats.pdf'))
+		except NameError:
+			pass
+		np.savez(os.path.join(self.storage_path,'stats.npz'),
+			self.max_fitness,
+			self.average_fitness,
+			self.population_diversity) 
