@@ -19,7 +19,7 @@ def ga(population,functions,generations,nsurvive,nimmigrants,stat):
 	This function runs a genetic algorithm on a population with the
 	given arguments.
 
-	Paraments
+	Parameters
 	---------
 	population : list of cosgen.sequence.Sequence objects
 	    Initial population.
