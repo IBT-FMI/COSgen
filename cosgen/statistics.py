@@ -3,7 +3,6 @@ population during execution of the genetic algorithm."""
 
 from matplotlib import pyplot as plt
 import numpy as np
-import warnings
 from scipy.spatial.distance import hamming
 import os.path
 

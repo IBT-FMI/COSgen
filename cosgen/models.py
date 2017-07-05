@@ -3,7 +3,10 @@ import scipy.linalg
 import scipy.special
 from scipy import signal
 from scipy.ndimage.filters import gaussian_filter1d
-from matplotlib import pyplot as plt
+try:
+	from matplotlib import pyplot as plt
+except:
+	pass
 
 class Model:
 
@@ -133,14 +136,18 @@ class EstimationModel(Model):
 		"""
 		lb = len(self.basis_set)
 		ls = len(sequence.l)
-		Xconv = np.empty(( ls , sequence.nstimtypes * lb ))
+		DM = np.empty(( ls, self.n_extra_evs + sequence.nstimtypes * lb ))
+		DM[:,0:self.n_extra_evs]=self.extra_evs
 		for i in range(1, sequence.nstimtypes+1):
 			for j in range(lb):
-				Xconv[:, lb * (i-1) + j] = self.filterfunc(np.convolve(sequence.l == i, self.basis_set[j])[0:ls])
-		Xconvmax = Xconv.max()
-		if Xconvmax != 0:
-			Xconv = Xconv/Xconv.max()
-		return np.matrix(np.c_[np.ones(len(Xconv)),np.c_[np.linspace(-0.5,0.5,len(Xconv)),Xconv]]) #add base line and linear trend/drift
+				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(np.convolve(sequence.l == i, self.basis_set[j])[0:ls])
+		return DM
+
+		DM = np.empty((ls,self.n_extra_evs+sequence.nstimtypes))
+		DM[:,0:self.n_extra_evs]=self.extra_evs
+		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
+		DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(np.convolve(m,self.hrf)[0:ls])), axis=1, arr=X))
+		return DM
 
 	def cov_beta(self, X):
 		"""

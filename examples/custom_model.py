@@ -11,7 +11,6 @@ import cosgen.models as models
 from cosgen.statistics import Statistics
 
 import numpy as np
-from matplotlib import pyplot as plt
 from functools import partial
 
 storage_path = '~/.cosgen'
