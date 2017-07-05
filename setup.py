@@ -15,5 +15,5 @@ setup(
 	entry_points = {
 		'console_scripts' : ['COSgen = cosgen.cli:main']
 	},
-	scripts = ['make_test_data.py']
+	scripts = ['estimate_autocorr','make_test_data']
 	)
