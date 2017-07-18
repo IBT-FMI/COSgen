@@ -54,8 +54,9 @@ class Statistics:
 
 	def gen_plot(self):
 		"""
-		Generates plot and save it.
-		Add description of what happens if matplotlib is not there
+		Generate plot, save it and save arrays in npz file.
+
+		If matplotlib is not available, no plot is generated.
 		"""
 		try:
 			f, axarr = plt.subplots(3,sharex=True)
