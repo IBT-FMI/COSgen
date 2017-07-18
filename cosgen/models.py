@@ -274,25 +274,61 @@ class DetectionModel(Model):
 
 
 def get_canonical_basis_set(TR,length,order):
+	#TODO implement properly
 	pass
 
 def get_gamma_basis_set(TR,length,order,a1,b1,a2,b2,c):
+	#TODO implement properly
 	t = range(0,length*TR,TR)
 	basis = []
 
 def get_FIR_basis_set(length):
+	#TODO implement properly
 	return np.identity(length)
 
 def get_bspline_basis_set(TR,length,order):
+	#TODO implement properly
 	pass
 
 def get_fourier_basis_set(TR,length,order):
+	#TODO implement properly
 	pass
 
 def get_ICA_basis_set(TR,length,order):
+	#TODO implement properly
 	pass
 
 def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
+	"""
+	Return hrf that is difference of two gamma function.
+
+	This function returns an hrf array constructed using the following
+	formula\:
+
+	..  math::  h(t) = \\frac{b_1^{a_1+1}t^{a_1}\\exp(-b_1t)}{\\Gamma (a_1+1)} - \\frac{b_2^{a_2+1}t^{a_2}\\exp(-b_2t)}{c\\Gamma (a_2+1)}
+
+	Parameters
+	----------
+	TR : float
+	    Repetition time.
+	length : int
+	    Length of hrf.
+	a1 : float
+	    Function parameter of hrf.
+	b1 : float
+	    Function parameter of hrf.
+	a2 : float
+	    Function parameter of hrf.
+	b2 : float
+	    Function parameter of hrf.
+	c : float
+	    Function parameter of hrf.
+
+	Returns
+	-------
+	np.array
+	    Array with hrf values at multiples of TR.
+	"""
 	t = np.linspace(0,(length-1)*TR,length)
 	const1 = b1^(a1+1)
 	const2 = b2^(a2+1)
@@ -301,12 +337,48 @@ def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
 	return const1 * t**a1 * np.exp(-b1*t)/denom1 - const2 * t**a2 * np.exp(-b2*t)/denom2
 
 def get_ar1_cov(dim,phi):
+	"""
+	Return covariance matrix for first order autoregressive model.
+
+	Parameters
+	----------
+	dim : int
+	    Dimensions.
+	phi : float
+	    Autoregressive parameter.
+
+	Returns
+	-------
+	np.matrix
+	    Covariance matrix.
+	"""
 	return np.matrix(np.fromfunction(lambda i, j: phi**np.abs(i-j), (dim, dim)))
 
 def get_autocorr_whitening_mat(acf):
+	"""
+	Return whitening matrix for a given autocorrelation function.
+
+	Parameters
+	----------
+	acf : np.array
+	    Autocorrelation function.
+
+	Returns
+	-------
+	np.matrix
+	    Whitening matrix.
+	"""
 	return np.linalg.inv(np.linalg.cholesky(scipy.linalg.toeplitz(acf)))
 
 def plot_design_matrix(mat):
+	"""
+	Show grayscale plot of design matrix.
+
+	Parameters
+	----------
+	mat : np.matrix
+	    Design matrix.
+	"""
 	a = int(mat.shape[0]/mat.shape[1])
 	fig, ax = plt.subplots(1)
 	plt.imshow(np.repeat(mat,a,axis=1), cmap='gray')
@@ -317,7 +389,24 @@ def plot_design_matrix(mat):
 	plt.show()
 
 def orthogonalize(A,v):
-	"""A must contain already orthogonalized vector!!"""
+	"""
+	Return verctor orthogonalized with respet to coloumn vectors of
+	matrix A.
+
+	*CAVE*: A must contain already orthogonalized column vectors!!
+
+	Parameters
+	----------
+	A : 2-d array-like object
+	    Basis vectors.
+	v : 1-d array-like object
+	    Vector to be orthogonalized.
+
+	Returns
+	-------
+	1-d array-like object
+	    Orthogonalized vector.
+	"""
 	if A.shape[1] == 0:
 		print('Not orthogonalized!')
 		return v
@@ -326,8 +415,19 @@ def orthogonalize(A,v):
 		return orthogonalize(A[:,1:],v)
 	else:
 		return v
-	#coef = A.transpose().dot(v)/np.linalg.norm(A,axis=0)
-	#return v - A.dot(coef)
 
 def gaussian_highpass(data,sigma=225):
+	"""
+	Return filtered data.
+
+	This function filters an 1-d array with a gaussian
+	high-pass filter.
+
+	Parameters
+	----------
+	data : 1-d array-like object
+	     Input data.
+	sigma : int
+	    Standard deviation of gaussian kernel.
+	"""
 	return data - gaussian_filter1d(data,sigma)
