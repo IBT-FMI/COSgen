@@ -1,4 +1,4 @@
-COSplay
+COSgen
 =======
 
 .. image:: https://readthedocs.org/projects/cosgen/badge/?version=latest
@@ -14,7 +14,7 @@ Features
 --------
 
 - Highly adaptable for specific use cases
-- Allows full model (design matrix construction, convarinace matric compution) specification
+- Allows full model (design matrix construction, convarinace matrix compution) specification
 - Allows custom fitness measure specification
 - Extensive API Documentation_
 - Fully compatible with a pure Micro/Python stimulus delivery solution (COSplay_)
@@ -31,7 +31,7 @@ COSgen can be installed using Python's `setuptools`.
    python setup.py install --user
 
 *Note:* `setuptools` will not manage any dependencies.
-You will have to install Dependencies_ manually, e.g. using ``pip install pyserial``.
+You will have to install Dependencies_ manually, e.g. using ``pip install argh``.
 
 Dependencies
 ------------
