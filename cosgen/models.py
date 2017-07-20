@@ -283,7 +283,14 @@ def get_gamma_basis_set(TR,length,order,a1,b1,a2,b2,c):
 	basis = []
 
 def get_FIR_basis_set(length):
-	#TODO implement properly
+	"""
+	Return Finite Response basis set.
+
+	Parameters
+	----------
+	length : int
+	    Length of Basis set.
+	"""
 	return np.identity(length)
 
 def get_bspline_basis_set(TR,length,order):
