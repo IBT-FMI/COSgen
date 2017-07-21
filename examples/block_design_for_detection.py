@@ -26,8 +26,8 @@ blockseqs = [Sequence(seql,seqtype='block',block_size=i) for i in range(1,seql+1
 
 fc = FunctionCrate()
 c = np.zeros(3)
-c[0]=-1
-c[1]=-1
+c[0]=0
+c[1]=0
 c[2]=1
 fc.add_fitness_measure('est_var',functools.partial(estimator_variance,model=model,optimality='d',contrast=None))#np.matrix(c)))
 
