@@ -305,14 +305,16 @@ def get_ICA_basis_set(TR,length,order):
 	#TODO implement properly
 	pass
 
-def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
+def get_gamma_hrf(TR,length,a1=6,a2=16,a3=1,a4=1,a5=1,a6=0):
 	"""
 	Return hrf that is difference of two gamma function.
 
 	This function returns an hrf array constructed using the following
 	formula\:
 
-	..  math::  h(t) = \\frac{b_1^{a_1+1}t^{a_1}\\exp(-b_1t)}{\\Gamma (a_1+1)} - \\frac{b_2^{a_2+1}t^{a_2}\\exp(-b_2t)}{c\\Gamma (a_2+1)}
+	..  math::  h(t) = \\frac{(t-a_6)^{a_1/a_3-1}\\exp(-(t-a_6)/a_3)}{\\Gamma (a_1/a_3)a_3^{a_1/a_3}} - a_5\\frac{(t-a_6)^{a_2/a_4-1}\\exp(-(t-a_6)/a_4)}{\\Gamma (a_2/a_4)a_4^{a_2/a_4}}
+
+	Defaults are the same as used by SPM. The maximum is normalized to 1.
 
 	Parameters
 	----------
@@ -321,15 +323,17 @@ def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
 	length : int
 	    Length of hrf.
 	a1 : float
-	    Function parameter of hrf.
-	b1 : float
-	    Function parameter of hrf.
+	    Function parameter of hrf. Time to peak.
 	a2 : float
 	    Function parameter of hrf.
-	b2 : float
+	a3 : float
 	    Function parameter of hrf.
-	c : float
+	a4 : float
 	    Function parameter of hrf.
+	a5 : float
+	    Function parameter of hrf. Time to onset.
+	a6 : float
+	    Function parameter of hrf. Time shift.
 
 	Returns
 	-------
@@ -337,11 +341,12 @@ def get_gamma_hrf(TR,length,a1,b1,a2,b2,c):
 	    Array with hrf values at multiples of TR.
 	"""
 	t = np.linspace(0,(length-1)*TR,length)
-	const1 = b1^(a1+1)
-	const2 = b2^(a2+1)
-	denom1 = scipy.special.gamma(a1+1)
-	denom2 = c * scipy.special.gamma(a2+1)
-	return const1 * t**a1 * np.exp(-b1*t)/denom1 - const2 * t**a2 * np.exp(-b2*t)/denom2
+	const1 = a1/a3
+	const2 = a2/a4
+	denom1 = scipy.special.gamma(const1)*a3**(const1)
+	denom2 = scipy.special.gamma(const2)*a4**(const2)
+	hrf = t**(const1-1) * np.exp(-t/a3)/denom1 - t**(const2-1) * np.exp(-t/a4)/denom2
+	return hrf/max(hrf)
 
 def get_ar1_cov(dim,phi):
 	"""
