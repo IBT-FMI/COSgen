@@ -8,15 +8,14 @@ import numpy as np
 def main(source,destination,sequence,hrf,voxels,scale=1000):
 	seq = np.load(sequence)/scale
 	hrf = np.load(hrf)
+	hrf = hrf/hrf.max()/scale
 	conv = np.convolve(seq,hrf)
-	func_data = conv
 	roi = nib.load(voxels)
 	vox = np.nonzero(roi.get_data())
 	img = nib.load(os.path.expanduser(source))
 	data = img.get_data()
 	conv = np.convolve(seq,hrf)
-	func_data = conv/conv.max()/scale
-	func_data = func_data[0:img.shape[3]]
+	func_data = conv[0:img.shape[3]]
 	data[vox] += func_data
 	nib.save(img,os.path.expanduser(destination))
 
