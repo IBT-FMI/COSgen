@@ -34,6 +34,7 @@ def estimator_variance(sequence, model, optimality, contrast=None):
 	covariance_beta = model.cov_beta(X)
 
 	if contrast is not None:
+		contrast = np.matrix(contrast)
 		covariance_beta = contrast*covariance_beta*contrast.transpose()
 	if optimality=='a':
 		return 1./np.trace(covariance_beta)
