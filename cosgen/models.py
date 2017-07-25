@@ -93,15 +93,20 @@ class EstimationModel(Model):
 	filterfunc : function
 	    Filter function takes numpy array as input and returns filtered 
 	    numpy array (c.f. :func:`~cosgen.models.gaussian_highpass`)
+	nonlincorrection : function
+	    Non-linearity correction function, that takes an array like
+	    object as input and returns an array like object
+	    (c.f. :func:`~cosgen.models.suashing_function`)
 	extra_evs : array-like object
 	    Extra explenatory variables in form of a 2D array-like object 
 	    with regressors as collumns. Shapes is 
 	    (number of extra evs, sequence length).
 	"""
 
-	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, extra_evs=None):
+	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, nonlincorrection=lambda x: x, extra_evs=None):
 		self.basis_set = basis_set
 		self.filterfunc = filterfunc
+		self.nonlincorrection = nonlincorrection
 		if whitening_mat is not None:
 			self.whitening_mat = whitening_mat
 		elif err_cov_mat is not None:
@@ -140,7 +145,7 @@ class EstimationModel(Model):
 		DM[:,0:self.n_extra_evs]=self.extra_evs
 		for i in range(1, sequence.nstimtypes+1):
 			for j in range(lb):
-				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(np.convolve(sequence.l == i, self.basis_set[j])[0:ls])
+				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(self.nonlincorrection(np.convolve(sequence.l == i, self.basis_set[j])[0:ls]))
 		return DM
 
 		DM = np.empty((ls,self.n_extra_evs+sequence.nstimtypes))
@@ -181,27 +186,28 @@ class EstimationModel(Model):
 		return Zpinv * np.transpose(Zpinv)	
 
 class DetectionModel(Model):
+	"""
+	This class implements a model for detecting specific 
+	constrasts for a given/known hrf.
 
-	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, extra_evs=None):
-		"""
-		This class implements a model for detecting specific 
-		constrasts for a given/known hrf.
+	The model employes pre-whitening to account for 
+	autocorrelation for the errors. Either 'whitening_mat or 
+	'err_cov_mat' must be given.
 
-		The model employes pre-whitening to account for 
-		autocorrelation for the errors. Either 'whitening_mat or 
-		'err_cov_mat' must be given.
+	Parameters
+	----------
+	hrf : numpy array
+	    Array with hrf values at multiples of TR.
+	whitening_mat : numpy matrix, optional
+	    Whitening matrix.
+	err_cov_mat : numpy matrix, optional
+	    Error covariance matrix.
+	"""
 
-		Parameters
-		----------
-		hrf : numpy array
-		    Array with hrf values at multiples of TR.
-		whitening_mat : numpy matrix, optional
-		    Whitening matrix.
-		err_cov_mat : numpy matrix, optional
-		    Error covariance matrix.
-		"""
-		self.hrf = hrf
+	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, nonlincorrection=lambda x: x, extra_evs=None):
+		self.hrf = hrf/float(hrf.max())
 		self.filterfunc = filterfunc
+		self.nonlincorrection = nonlincorrection
 		if whitening_mat is not None:
 			self.whitening_mat = whitening_mat
 		elif err_cov_mat is not None:
@@ -238,7 +244,7 @@ class DetectionModel(Model):
 		DM = np.empty((ls,self.n_extra_evs+sequence.nstimtypes))
 		DM[:,0:self.n_extra_evs]=self.extra_evs
 		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
-		DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(np.convolve(m,self.hrf)[0:ls])), axis=1, arr=X))
+		DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(m,self.hrf)[0:ls]))), axis=1, arr=X))
 		return DM
 
 	def cov_beta(self, X):
@@ -420,7 +426,6 @@ def orthogonalize(A,v):
 	    Orthogonalized vector.
 	"""
 	if A.shape[1] == 0:
-		print('Not orthogonalized!')
 		return v
 	v = v - A[:,0].dot(v)/A[:,0].dot(A[:,0]) * A[:,0]
 	if A.shape[1] > 1:
@@ -443,3 +448,9 @@ def gaussian_highpass(data,sigma=225):
 	    Standard deviation of gaussian kernel.
 	"""
 	return data - gaussian_filter1d(data,sigma)
+
+def squashing_function(array, max=2):
+	#TODO documentation
+	idx = np.where(array > max)
+	array[idx] = max
+	return array
