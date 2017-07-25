@@ -173,7 +173,7 @@ class EstimationModel(Model):
 		    Covariance matrix of beta.
 		"""
 		#This is only for pre-whitening and not precoloring
-		Z = self.whitening_mat*X
+		Z = np.dot(self.whitening_mat, X)
 		try:
 			Zpinv = np.linalg.pinv(Z)
 		except np.linalg.linalg.LinAlgError:
@@ -183,7 +183,7 @@ class EstimationModel(Model):
 			print(self.whitening_mat)
 			print('Z:')
 			print(Z)
-		return Zpinv * np.transpose(Zpinv)	
+		return np.dot(Zpinv, np.transpose(Zpinv))
 
 class DetectionModel(Model):
 	"""
@@ -212,7 +212,7 @@ class DetectionModel(Model):
 			self.whitening_mat = whitening_mat
 		elif err_cov_mat is not None:
 			L = np.linalg.cholesky(err_cov_mat)
-			self.whitening_mat = np.linalg.inv(L)
+			self.whitening_mat = np.matrixnp.linalg.inv(L)
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
 		if extra_evs is None:
@@ -266,7 +266,7 @@ class DetectionModel(Model):
 		    Covariance matrix of beta.
 		"""
 		#This is only for pre-whitening and not precoloring
-		Z = self.whitening_mat*X
+		Z = np.dot(self.whitening_mat,X)
 		try:
 			Zpinv = np.linalg.pinv(Z)
 		except np.linalg.linalg.LinAlgError:
@@ -276,7 +276,7 @@ class DetectionModel(Model):
 			print(self.whitening_mat)
 			print('Z:')
 			print(Z)
-		return Zpinv * np.transpose(Zpinv)	
+		return np.dot(Zpinv,np.transpose(Zpinv))	
 
 
 def get_canonical_basis_set(TR,length,order):
