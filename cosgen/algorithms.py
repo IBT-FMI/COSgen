@@ -12,7 +12,7 @@ class MissingFunction(Exception):
 	"""
 	pass
 
-def ga(population,functions,generations,nsurvive,nimmigrants,stat):
+def ga(population,functions,generations,nsurvive,nimmigrants,stat,print_freq=100):
 	"""
 	Run genetic algorithm.
 
@@ -34,6 +34,8 @@ def ga(population,functions,generations,nsurvive,nimmigrants,stat):
 	    Number of immigrants in each generation.
 	stat : cosgen.statistics.Statistics object
 	    Logs properties of population over generations.
+	print_freq : int
+	    Print generation number every print_freq generations.
 
 	Returns
 	-------
@@ -50,7 +52,9 @@ def ga(population,functions,generations,nsurvive,nimmigrants,stat):
 	population_size = len(population)
 	for seq in population:
 		seq.fitness = functions.evaluate_fitness(seq)
-	for _ in range(generations):
+	for gen in range(generations):
+		if gen%print_freq == 0:
+			print('Generation '+str(gen)+' of '+str(generations))
 		stat.add(population)
 		best_seqs = functions.find_best(population,nsurvive)
 		population = best_seqs
