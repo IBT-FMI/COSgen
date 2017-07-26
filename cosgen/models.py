@@ -105,6 +105,8 @@ class EstimationModel(Model):
 
 	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, nonlincorrection=lambda x: x, extra_evs=None):
 		self.basis_set = basis_set
+		for i in range(len(basis_set)):
+			self.basis_set[i]=self.basis_set[i]/float(self.basis_set[i].max())
 		self.filterfunc = filterfunc
 		self.nonlincorrection = nonlincorrection
 		if whitening_mat is not None:
@@ -146,12 +148,6 @@ class EstimationModel(Model):
 		for i in range(1, sequence.nstimtypes+1):
 			for j in range(lb):
 				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(self.nonlincorrection(np.convolve(sequence.l == i, self.basis_set[j])[0:ls]))
-		return DM
-
-		DM = np.empty((ls,self.n_extra_evs+sequence.nstimtypes))
-		DM[:,0:self.n_extra_evs]=self.extra_evs
-		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
-		DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(np.convolve(m,self.hrf)[0:ls])), axis=1, arr=X))
 		return DM
 
 	def cov_beta(self, X):
