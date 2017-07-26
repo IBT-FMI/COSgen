@@ -110,10 +110,10 @@ class EstimationModel(Model):
 		self.filterfunc = filterfunc
 		self.nonlincorrection = nonlincorrection
 		if whitening_mat is not None:
-			self.whitening_mat = whitening_mat
+			self.whitening_mat = np.matrix(whitening_mat)
 		elif err_cov_mat is not None:
 			L = np.linalg.cholesky(err_cov_mat)
-			self.whitening_mat = np.linalg.inv(L)
+			self.whitening_mat = np.matrix(np.linalg.inv(L))
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
 		if extra_evs is None:
@@ -205,10 +205,10 @@ class DetectionModel(Model):
 		self.filterfunc = filterfunc
 		self.nonlincorrection = nonlincorrection
 		if whitening_mat is not None:
-			self.whitening_mat = whitening_mat
+			self.whitening_mat = np.matrix(whitening_mat)
 		elif err_cov_mat is not None:
 			L = np.linalg.cholesky(err_cov_mat)
-			self.whitening_mat = np.matrixnp.linalg.inv(L)
+			self.whitening_mat = np.matrix(np.linalg.inv(L))
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
 		if extra_evs is None:
