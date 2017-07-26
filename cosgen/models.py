@@ -342,12 +342,12 @@ def get_gamma_hrf(TR,length,a1=6,a2=16,a3=1,a4=1,a5=1,a6=0):
 	np.array
 	    Array with hrf values at multiples of TR.
 	"""
-	t = np.linspace(0,(length-1)*TR,length)
+	t = np.linspace(0,(length-1)*TR,length)-a6
 	const1 = a1/a3
 	const2 = a2/a4
 	denom1 = scipy.special.gamma(const1)*a3**(const1)
 	denom2 = scipy.special.gamma(const2)*a4**(const2)
-	hrf = t**(const1-1) * np.exp(-t/a3)/denom1 - t**(const2-1) * np.exp(-t/a4)/denom2
+	hrf = t**(const1-1) * np.exp(-t/a3)/denom1 - a5 * t**(const2-1) * np.exp(-t/a4)/denom2
 	return hrf/max(hrf)
 
 def get_ar1_cov(dim,phi):
