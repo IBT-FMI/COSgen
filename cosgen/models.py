@@ -100,7 +100,8 @@ class EstimationModel(Model):
 	extra_evs : array-like object
 	    Extra explenatory variables in form of a 2D array-like object 
 	    with regressors as collumns. Shapes is 
-	    (number of extra evs, sequence length).
+	    (number of extra evs, sequence length). If None, a constant regressor
+	    is used for baseline correction.
 	"""
 
 	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, nonlincorrection=lambda x: x, extra_evs=None):
@@ -117,7 +118,9 @@ class EstimationModel(Model):
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
 		if extra_evs is None:
-			self.extra_evs = np.array([[]])
+			self.extra_evs = np.empty((len(self.whitening_mat),1))
+			self.extra_evs[:,0] = np.ones(len(self.whitening_mat))
+			#self.extra_evs = np.array([[]])
 		else:
 			self.extra_evs = extra_evs
 		self.n_extra_evs = self.extra_evs.shape[1]
@@ -212,7 +215,9 @@ class DetectionModel(Model):
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
 		if extra_evs is None:
-			self.extra_evs = np.array([[]])
+			self.extra_evs = np.empty((len(self.whitening_mat),1))
+			self.extra_evs[:,0] = np.ones(len(self.whitening_mat))
+			#self.extra_evs = np.array([[]])
 		else:
 			self.extra_evs = extra_evs
 		self.n_extra_evs = self.extra_evs.shape[1]
