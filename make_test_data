@@ -4,18 +4,19 @@ import nibabel as nib
 import argh
 import os.path
 import numpy as np
+import cosgen.models as models
+from scipy.ndimage.filters import gaussian_filter1d
 
-def main(source,destination,sequence,hrf,voxels,scale=1000):
-	seq = np.load(sequence)/scale
+def main(source, destination, sequence, hrf, voxels, scale=1000, saturation=2, highpass_sigma=225, lowpass_sigma=2):  #saturation/scale is the value at which the activation saturates
+	seq = np.load(sequence)
 	hrf = np.load(hrf)
-	hrf = hrf/hrf.max()/scale
-	conv = np.convolve(seq,hrf)
+	hrf = hrf/float(hrf.max())/scale
+	conv = models.squashing_function(np.convolve(seq,hrf),max=float(saturation/scale))
 	roi = nib.load(voxels)
 	vox = np.nonzero(roi.get_data())
 	img = nib.load(os.path.expanduser(source))
 	data = img.get_data()
-	conv = np.convolve(seq,hrf)
-	func_data = conv[0:img.shape[3]]
+	func_data = gaussian_filter1d(models.gaussian_highpass(conv[0:img.shape[3]],sigma=highpass_sigma),sigma=lowpass_sigma)
 	data[vox] += func_data
 	nib.save(img,os.path.expanduser(destination))
 
