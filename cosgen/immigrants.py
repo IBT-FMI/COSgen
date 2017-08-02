@@ -5,6 +5,8 @@ try:
 except ImportError:
 	import sequence
 
+import numpy as np
+
 def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_fct):
 	"""
 	Generate immigrants.
@@ -36,6 +38,9 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_
 	for i in range(nimmigrants):
 		randseq = sequence.Sequence(seqlen, nstimtypes, seqtype='random')
 		blockseq = sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size)
-		seq = cross_over_fct(randseq, blockseq)
+		if np.random.rand()<0.5:
+			seq = cross_over_fct(randseq, blockseq)
+		else:
+			seq = cross_over_fct(blockseq, randseq)
 		imigrants.append(seq)
 	return imigrants
