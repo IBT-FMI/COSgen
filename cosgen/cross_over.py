@@ -30,5 +30,6 @@ def cross_over(sequence1, sequence2):
 	length = min(len(sequence1.l),len(sequence2.l))
 	r = random.randrange(length)
 	l = np.append(sequence1.l[:r],sequence2.l[r:])
+	amp = np.append(sequence1.amplitudes[:r],sequence2.amplitudes[r:])
 	nstimtypes = max(sequence1.nstimtypes,sequence2.nstimtypes)
-	return sequence.Sequence(nstimtypes=nstimtypes,l=l)
+	return sequence.Sequence(nstimtypes=nstimtypes, l=l, amplitudes=amp)

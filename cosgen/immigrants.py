@@ -7,7 +7,7 @@ except ImportError:
 
 import numpy as np
 
-def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_fct):
+def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_fct, amplitudes=None):
 	"""
 	Generate immigrants.
 
@@ -36,8 +36,8 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_
 	"""
 	imigrants = []
 	for i in range(nimmigrants):
-		randseq = sequence.Sequence(seqlen, nstimtypes, seqtype='random')
-		blockseq = sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size)
+		randseq = sequence.Sequence(seqlen, nstimtypes, seqtype='random',amplitudes=amplitudes)
+		blockseq = sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size, amplitudes=amplitudes)
 		if np.random.rand()<0.5:
 			seq = cross_over_fct(randseq, blockseq)
 		else:

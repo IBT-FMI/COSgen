@@ -6,31 +6,54 @@ class BlockSizeError(Exception):
 	pass
 
 class Sequence:
-	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, block_size=None):
+	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, amplitudes=None, block_size=None, block_sigma=3):
 		self.fitness = np.nan
 		self.nstimtypes = nstimtypes
 		if l is not None:
 			self.l = np.array(l)
 			self.seqlen = len(l)
+			self.amplitudes = np.zeros(self.seqlen)
+			idx = np.nonzero(self.l)
+			if len(amplitudes)==1 and amplitudes=='random':
+				self.amplitudes[idx] = np.random.choice(np.linspace(0,1,256),len(idx))
+			elif amplitudes is not None:
+				self.amplitudes = np.array(amplitudes)
+			else:
+				self.amplitudes[idx]= np.ones(len(idx))
 			if self.nstimtypes == 1:
 				self.nstimtypes = len(set(l))-1
 			if self.nstimtypes == 0:	#if list only containes 0 events assume nstimtypes is 1
 				self.nstimtypes = 1
 		elif seqtype=='random':
-			self.l = np.random.randint(nstimtypes+1,size=seqlen)
+			self.l = np.random.randint(nstimtypes+1, size=seqlen)
+			self.amplitudes = np.zeros(seqlen)
+			idx = np.nonzero(self.l)
+			if type(amplitudes)==str and amplitudes=='random':
+				self.amplitudes[idx] = np.random.choice(np.linspace(0,1,256),len(idx))
+			else:
+				self.amplitudes[idx] = np.ones(len(idx))
 			self.seqlen = seqlen
 		elif seqtype=='block':
 			if block_size is None:
 				raise BlockSizeError("block_size must be set if seqtype is 'block'")
-			#if block_size < 0 or seqlen % block_size != 0:
-			#	raise BlockSizeError('block_size must be a positive divisor of seqlen. block_size={0} seqlen={1}'.format(block_size,seqlen))
 			self.l = np.empty(seqlen)
+			self.amplitudes = np.zeros(seqlen)
 			self.seqlen = seqlen
 			position=0
-			while position<seqlen:
-				self.l[position:min(position+block_size,seqlen)] = random.randint(1,nstimtypes)
-				self.l[position+block_size:min(position+2*block_size,seqlen)] = 0
-				position += 2*block_size
+			if amplitudes=='random':
+				while position<seqlen:
+					self.l[position:min(position+block_size,seqlen)] = random.randint(1,nstimtypes)
+					self.amplitudes[position:min(position+block_size,seqlen)] = np.random.choice(np.linspace(0,1,256),1)
+					block_gap = max(int(np.random.normal(block_size,block_sigma)),1)
+					self.l[position+block_size:min(position+block_size+block_gap,seqlen)] = 0
+					position += block_size+block_gap
+			else:
+				while position<seqlen:
+					self.l[position:min(position+block_size,seqlen)] = random.randint(1,nstimtypes)
+					self.amplitudes[position:min(position+block_size,seqlen)] = 1
+					block_gap = max(int(np.random.normal(block_size,block_sigma)),1)
+					self.l[position+block_size:min(position+block_size+block_gap,seqlen)] = 0
+					position += block_size+block_gap
 		elif seqtype=='m':
 			#TODO implement m sequences
 			pass
@@ -52,10 +75,10 @@ class Sequence:
 		path = os.path.expanduser(path)
 		np.save(os.path.join(path,'sequence'+str(index)+'.npy'),self.l)
 		with open(os.path.join(path,'sequence'+str(index)+'.tsv'),'w+') as f:
-			f.write('onset\tduration\tstimulation_frequency\n')
+			f.write('onset\tduration\tfrequency\tpulse_width\tamplitude\tout_channel\n')
 			blocks = self.get_block_representation()
 			for i in blocks:
-				f.write(str(i[0]*TR)+'\t'+str((i[1]-i[0])*TR)+'\t20.0\n')
+				f.write(str(i[0]*TR)+'\t'+str((i[1]-i[0])*TR)+'\t20.0\t0.005\t'+str(self.amplitudes[i[0]])+'\t1\n')
 
 def estimate_optimal_block_size(seqlen, fc):
 	blockseqs = [Sequence(seqlen,seqtype='block',block_size=i) for i in range(1,seqlen+1)]	

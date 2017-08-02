@@ -5,7 +5,7 @@ import numpy as np
 class InvalidFractionError(Exception):
 	pass
 
-def mutate(sequence,mutation_fraction):
+def mutate(sequence, mutation_fraction, include_amplitudes=False):
 	"""
 	Mutate sequence with given probability.
 
@@ -33,5 +33,12 @@ def mutate(sequence,mutation_fraction):
 	idxs = random.sample(range(length),int(length*mutation_fraction))
 	for i in idxs:
 		sequence.l[i] = random.randrange(sequence.nstimtypes+1)
+		if sequence.l[i] != 0:
+			if include_amplitudes:
+				sequence.amplitudes[i] = np.random.choice(np.linspace(0,1,256))
+			else:
+				sequence.amplitudes[i] = 1
+		else:
+			sequence.amplitudes[i] = 0
 	sequence.fitness = np.nan
 	return sequence

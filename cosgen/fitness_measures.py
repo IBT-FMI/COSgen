@@ -5,7 +5,7 @@ class OptimalityError(Exception):
 	"""Error raised when a optimality is not 'a' or 'd'."""
 	pass
 
-def estimator_variance(sequence, model, optimality, contrast=None):
+def estimator_variance(sequence, model, optimality, contrast=None, normalization=1):
 	"""
 	The optimality of the estimator variances.
 	
@@ -37,8 +37,12 @@ def estimator_variance(sequence, model, optimality, contrast=None):
 		contrast = np.matrix(contrast)
 		covariance_beta = contrast*covariance_beta*contrast.transpose()
 	if optimality=='a':
-		return 1./np.trace(covariance_beta)
+		return 1./np.trace(covariance_beta)/normalization
 	elif optimality=='d':
-		return 1./np.linalg.det(covariance_beta)
+		return 1./np.linalg.det(covariance_beta)/normalization
 	else:
 		raise OptimalityError('Unknow optimality {0}. Possible choices are "a","d"'.format(optimality))
+
+def jitter(sequence, normalization=1):
+	sp = abs(np.fft.fft(sequence.l))
+	return sum(sp)/sp.max()/len(sp)/normalization
