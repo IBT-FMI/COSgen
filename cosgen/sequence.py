@@ -70,6 +70,16 @@ class Sequence:
 		if self.l[self.seqlen-1] != 0:
 			result.append([start, self.seqlen])
 		return np.array(result)
+
+	def add_baseline(self,length,position='initial'):
+		if position=='initial':
+			self.l = np.append(np.zeros(length),self.l)
+			self.seqlen = len(self.l) 
+		elif position=='terminal':
+			self.l = np.append(self.l,np.zeros(length))
+			self.seqlen = len(slef.l) 
+		else:
+			raise ValueError("baseline position can only be 'initial' or 'terminal'. {0} was given.".format(position))
 		
 	def dump(self, path, index=0, TR=1):
 		path = os.path.expanduser(path)

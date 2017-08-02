@@ -4,7 +4,7 @@ try:
 	from cosgen.function_crate import FunctionCrate
 	from cosgen.algorithms import ga
 	import cosgen.fitness_measures as fitness_measures
-	from cosgen.sequence import Sequence
+	from cosgen.sequence import Sequence, estimate_optimal_block_size
 	from cosgen.mutate import mutate
 	from cosgen.cross_over import cross_over
 	from cosgen.immigrants import generate_immigrants
@@ -28,7 +28,7 @@ from functools import partial
 import datetime
 import numpy as np
 
-def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1, model_type='detection'):
+def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1, model_type='detection', autoregression=0.5, baseline='auto'):
 
 	storage_path = os.path.expanduser(storage_path)
 	storage_path = os.path.join(storage_path,'{:%Y%m%d%H%M%S}'.format(datetime.datetime.now()))
@@ -48,20 +48,13 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 		f.write('Number of survivors = '+str(survivors)+'\n')
 		f.write('Number of immigrants = '+str(nimmigrants)+'\n')
 		f.write('HRF length = '+str(hrflength)+'\n')
-		f.write('TR = '+str(TR))
+		f.write('TR = '+str(TR)+'\n')
+		f.write('Autoregression = '+str(autoregression)+'\n')
+		f.write('Baseline = '+str(baseline))
 
 	fcts = FunctionCrate()
-#	def design_mat(x):
-#		return np.diag(x.l)
-#	def cov_mat(x):
-#		return np.identity(len(x[0]))
-#	model = models.Model(design_mat, cov_mat)
-	gamma_hrf = models.get_gamma_hrf(TR,hrflength,5,1,15,1,6)
-	ar1_cov = models.get_ar1_cov(seqlength,0.5)
-#	import math
-#	gamma_hrf = np.zeros(40)
-#	gamma_hrf[0:len(gamma_hrf):2]=1
-#	ar1_cov = np.identity(139)
+	gamma_hrf = models.get_gamma_hrf(TR,hrflength)
+	ar1_cov = models.get_ar1_cov(seqlength,autoregression)
 	extra_evs = np.empty((seqlength,2))
 	extra_evs[:,0]=np.ones(seqlength)
 	extra_evs[:,1]=np.linspace(-0.5,0.5,seqlength)
@@ -73,12 +66,16 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 	fcts.add_fitness_measure('cov',partial(fitness_measures.estimator_variance,model=model,optimality='a'))
 	fcts.set_mutate(mutate)
 	fcts.set_cross_over(cross_over)
-	fcts.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=10))
+	optimal_block_size = estimate_optimal_block_size(seqlength, fcts)
+	if baseline=='auto':
+		baseline = 2*optimal_block_size
+	fcts.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=optimal_block_size))
 	statistics = Statistics(storage_path)
 	population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
 	population.append(Sequence(seqlength,nstimtypes,'block',block_size=10))
 	population = ga(population,fcts,generations,survivors,nimmigrants,statistics)
 	for i,seq in enumerate(fcts.find_best(population,library_size)):
+		seq.add_baseline(baseline)
 		seq.dump(storage_path,index=i,TR=TR)
 		print(seq.l, seq.fitness)
 
