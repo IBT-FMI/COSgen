@@ -149,8 +149,11 @@ class EstimationModel(Model):
 		DM = np.empty(( ls, self.n_extra_evs + sequence.nstimtypes * lb ))
 		DM[:,0:self.n_extra_evs]=self.extra_evs
 		for i in range(1, sequence.nstimtypes+1):
+			idx = sequence.l == i
+			tmp = np.zeros(sequence.seqlen)
+			tmp[idx] = sequence.amplitudes[idx]
 			for j in range(lb):
-				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(self.nonlincorrection(np.convolve(sequence.l == i, self.basis_set[j])[0:ls]))
+				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(self.nonlincorrection(np.convolve(tmp, self.basis_set[j])[0:ls]))
 		return DM
 
 	def cov_beta(self, X):
@@ -244,8 +247,13 @@ class DetectionModel(Model):
 		ls = len(sequence.l)
 		DM = np.empty((ls,self.n_extra_evs+sequence.nstimtypes))
 		DM[:,0:self.n_extra_evs]=self.extra_evs
-		X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)],dtype=int)
-		DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(m,self.hrf)[0:ls]))), axis=1, arr=X))
+		for i in range(1,sequence.nstimtypes+1):
+			idx = sequence.l == i
+			tmp = np.zeros(sequence.seqlen)
+			tmp[idx] = sequence.amplitudes[idx]
+			DM[:,self.n_extra_evs + i-1 ] = orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolce(tmp,self.hrf)[0:ls])))
+		#X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)], dtype=int)
+		#DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(m,self.hrf)[0:ls]))), axis=1, arr=X))
 		return DM
 
 	def cov_beta(self, X):

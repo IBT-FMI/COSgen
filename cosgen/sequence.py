@@ -6,7 +6,7 @@ class BlockSizeError(Exception):
 	pass
 
 class Sequence:
-	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, amplitudes=None, block_size=None, block_sigma=3):
+	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, amplitudes=None, block_size=None, block_sigma=0, gap_sigma=0):
 		self.fitness = np.nan
 		self.nstimtypes = nstimtypes
 		if l is not None:
@@ -42,18 +42,20 @@ class Sequence:
 			position=0
 			if amplitudes=='random':
 				while position<seqlen:
-					self.l[position:min(position+block_size,seqlen)] = random.randint(1,nstimtypes)
-					self.amplitudes[position:min(position+block_size,seqlen)] = np.random.choice(np.linspace(0,1,256),1)
-					block_gap = max(int(np.random.normal(block_size,block_sigma)),1)
-					self.l[position+block_size:min(position+block_size+block_gap,seqlen)] = 0
-					position += block_size+block_gap
+					block_len = max(int(np.random.normal(block_size,block_sigma)),1)
+					self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
+					self.amplitudes[position:min(position+block_len,seqlen)] = np.random.choice(np.linspace(0,1,256),1)
+					block_gap = max(int(np.random.normal(block_size,gap_sigma)),1)
+					self.l[position+block_size:min(position+block_len+block_gap,seqlen)] = 0
+					position += block_len+block_gap
 			else:
 				while position<seqlen:
-					self.l[position:min(position+block_size,seqlen)] = random.randint(1,nstimtypes)
-					self.amplitudes[position:min(position+block_size,seqlen)] = 1
-					block_gap = max(int(np.random.normal(block_size,block_sigma)),1)
-					self.l[position+block_size:min(position+block_size+block_gap,seqlen)] = 0
-					position += block_size+block_gap
+					block_len = max(int(np.random.normal(block_size,block_sigma)),1)
+					self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
+					self.amplitudes[position:min(position+block_len,seqlen)] = 1
+					block_gap = max(int(np.random.normal(block_size,gap_sigma)),1)
+					self.l[position+block_size:min(position+block_len+block_gap,seqlen)] = 0
+					position += block_len+block_gap
 		elif seqtype=='m':
 			#TODO implement m sequences
 			pass
