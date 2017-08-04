@@ -46,7 +46,7 @@ class Sequence:
 					self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
 					self.amplitudes[position:min(position+block_len,seqlen)] = np.random.choice(np.linspace(0,1,256),1)
 					block_gap = max(int(np.random.normal(block_size,gap_sigma)),1)
-					self.l[position+block_size:min(position+block_len+block_gap,seqlen)] = 0
+					self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
 					position += block_len+block_gap
 			else:
 				while position<seqlen:
@@ -54,7 +54,7 @@ class Sequence:
 					self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
 					self.amplitudes[position:min(position+block_len,seqlen)] = 1
 					block_gap = max(int(np.random.normal(block_size,gap_sigma)),1)
-					self.l[position+block_size:min(position+block_len+block_gap,seqlen)] = 0
+					self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
 					position += block_len+block_gap
 		elif seqtype=='m':
 			#TODO implement m sequences
