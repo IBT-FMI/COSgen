@@ -113,8 +113,9 @@ class EstimationModel(Model):
 		if whitening_mat is not None:
 			self.whitening_mat = np.matrix(whitening_mat)
 		elif err_cov_mat is not None:
-			L = np.linalg.cholesky(err_cov_mat)
-			self.whitening_mat = np.matrix(np.linalg.inv(L))
+			#L = np.linalg.cholesky(err_cov_mat)
+			#self.whitening_mat = np.matrix(np.linalg.inv(L))
+			self.whitening_mat = get_whitening_mat(err_cov_mat)
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
 		if extra_evs is None:
@@ -213,8 +214,9 @@ class DetectionModel(Model):
 		if whitening_mat is not None:
 			self.whitening_mat = np.matrix(whitening_mat)
 		elif err_cov_mat is not None:
-			L = np.linalg.cholesky(err_cov_mat)
-			self.whitening_mat = np.matrix(np.linalg.inv(L))
+			#L = np.linalg.cholesky(err_cov_mat)
+			#self.whitening_mat = np.matrix(np.linalg.inv(L))
+			self.whitening_mat = get_whitening_mat(err_cov_mat)
 		else:
 			raise AttributeError("Either 'whitening_mat or 'err_cov_mat' must be given.")
 		if extra_evs is None:
@@ -251,7 +253,7 @@ class DetectionModel(Model):
 			idx = sequence.l == i
 			tmp = np.zeros(sequence.seqlen)
 			tmp[idx] = sequence.amplitudes[idx]
-			DM[:,self.n_extra_evs + i-1 ] = orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolce(tmp,self.hrf)[0:ls])))
+			DM[:,self.n_extra_evs + i-1 ] = orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(tmp,self.hrf)[0:ls])))
 		#X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)], dtype=int)
 		#DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(m,self.hrf)[0:ls]))), axis=1, arr=X))
 		return DM
@@ -381,21 +383,55 @@ def get_ar1_cov(dim,phi):
 	"""
 	return np.matrix(np.fromfunction(lambda i, j: phi**np.abs(i-j), (dim, dim)))
 
-def get_autocorr_whitening_mat(acf):
+def get_whitening_mat(cov_mat, whitening_type='zca', epsilon=1e-10):
 	"""
-	Return whitening matrix for a given autocorrelation function.
+	Calculate whitening matrix from covariance matrix.
 
 	Parameters
 	----------
-	acf : np.array
-	    Autocorrelation function.
+	cov_mat : 2d array-like object
+	    Covariance matrix.
+	whitening_type : string, optional
+	    Type of whitening. Can be 'zca' or 'cholesky'.
+	epsilon : float
+	    Constant to avoid zero devision when inverting eigenvalues.
 
 	Returns
 	-------
 	np.matrix
 	    Whitening matrix.
 	"""
-	return np.linalg.inv(np.linalg.cholesky(scipy.linalg.toeplitz(acf)))
+	if whitening_type == 'zca':
+		U,S,V = np.linalg.svd(cov_mat)
+		whitening_mat = np.matrix(np.dot(U, np.dot(np.diag(1./np.sqrt(S + epsilon)), U.T)))
+		return whitening_mat
+	elif whitening_type == 'cholesky':
+		L = np.linalg.cholesky(cov_mat)
+		whitening_mat = np.matrix(np.linalg.inv(L))
+		return whitening_mat
+	else:
+		raise ValueError('Unknown whitening type "{0}".')
+
+
+def get_autocorr_whitening_mat(acf, epsilon=1e-10):
+	"""
+	Return ZCA whitening matrix for a given autocorrelation function.
+
+	Parameters
+	----------
+	acf : np.array
+	    Autocorrelation function.
+	epsilon : float
+	    Constant added to 0 eigenvalues to avoid devision by zero.
+
+	Returns
+	-------
+	np.matrix
+	    Whitening matrix.
+	"""
+	U,S,V = np.linalg.svd(scipy.linalg.toeplitz(acf))
+	whitening_mat = np.matrix(np.dot(U, np.dot(np.diag(1./np.sqrt(S + epsilon)), U.T)))
+	return whitening_mat
 
 def plot_design_matrix(mat):
 	"""
