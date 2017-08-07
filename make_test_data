@@ -11,7 +11,8 @@ def main(source, destination, sequence, hrf, voxels, scale=1000, saturation=2, h
 	seq = np.load(sequence)
 	hrf = np.load(hrf)
 	hrf = hrf/float(hrf.max())/scale
-	conv = models.squashing_function(np.convolve(seq,hrf),max=float(saturation/scale))
+	#conv = models.squashing_function(np.convolve(seq,hrf),max=float(saturation/scale))
+	conv = np.convolve(seq,hrf)
 	roi = nib.load(voxels)
 	vox = np.nonzero(roi.get_data())
 	img = nib.load(os.path.expanduser(source))
