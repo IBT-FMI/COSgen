@@ -34,7 +34,7 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_
 	list of cosgen.sequence.Sequence
 	    List of sequence according to parameters.
 	"""
-	imigrants = []
+	immigrants = []
 	for i in range(nimmigrants):
 		randseq = sequence.Sequence(seqlen, nstimtypes, seqtype='random',amplitudes=amplitudes)
 		blockseq = sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size, amplitudes=amplitudes)
@@ -42,5 +42,11 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_
 			seq = cross_over_fct(randseq, blockseq)
 		else:
 			seq = cross_over_fct(blockseq, randseq)
-		imigrants.append(seq)
-	return imigrants
+		immigrants.append(seq)
+	return immigrants
+
+def generate_block_immigrants(nimmigrants, seqlen, nstimtypes, block_size, block_sigma, gap_sigma, amplitudes=None):
+	immigrants = []
+	for i in range(nimmigrants):
+		immigrants.append(sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size, amplitudes=amplitudes, block_sigma=block_sigma, gap_sigma=gap_sigma))
+	return immigrants
