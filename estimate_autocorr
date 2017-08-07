@@ -6,9 +6,10 @@ import argh
 import os.path
 import math
 
+from matplotlib import pyplot as plt
 
-def main(data="~/test_ni_data/ofM.dr/preprocessing/as_composite/sub-5703/ses-ofM/func/sub-5703_ses-ofM_trial-EPI_CBV_chr_longSOA.nii.gz", 
-	voxels="~/ni_data/templates/DSURQEc_200micron_mask.nii.gz"):
+def main(data="~/ni_data/rsfM/preprocessing/bandpass/sub-5692/ses-rsfM/func/sub-5692_ses-rsfM_trial-EPI_CBV.nii.gz", 
+	voxels="~/ni_data/templates/DSURQEc_200micron_mask.nii.gz", save_acf_as='/home/wguest/acf.npy'):
 
 	roi = nib.load(os.path.expanduser(voxels))
 	vox = np.nonzero(roi.get_data())
@@ -16,11 +17,13 @@ def main(data="~/test_ni_data/ofM.dr/preprocessing/as_composite/sub-5703/ses-ofM
 	data = img.get_data()[vox]
 	print(data.shape)
 	a = np.empty((2,data.shape[1]-1))
+	avnoise = np.zeros(data.shape[1])
 	corrcoeff = 0
 	n = data.shape[0]
 	for i in range(data.shape[0]):
 		a[0,:] = data[i,:data.shape[1]-1]
 		a[1,:] = data[i,1:]
+		avnoise += data[i,:]
 		tmp = np.corrcoef(a)[0,1]
 		if math.isnan(tmp):
 			#print(a)
@@ -30,6 +33,26 @@ def main(data="~/test_ni_data/ofM.dr/preprocessing/as_composite/sub-5703/ses-ofM
 		corrcoeff += tmp
 	print("{0} of {1} voxels were used for the calculation.".format(n,data.shape[0]))
 	print("The first order auto correlation parameter is approximately " + str(corrcoeff/n))
+	if save_acf_as is not None:
+		avnoise = avnoise/data.shape[0]
+		#plt.plot(avnoise)
+		#plt.savefig('/home/wguest/avnoise.pdf')
+
+		n = len(avnoise)
+		r = np.zeros(n)
+		for i in range(n):
+			a1 = avnoise[:n-i]
+			a1 = a1 - a1.mean()
+			a1 = a1 / a1.std()
+			a2 = avnoise[i:]
+			a2 = a2 - a2.mean()
+			a2 = a2 / a2.std()
+			r[i] = np.dot(a1,a2)
+		result = r/np.arange(n,0,-1)
+		np.save(save_acf_as,result)
+		#plt.figure()
+		#plt.plot(result)
+		#plt.savefig('/home/wguest/acf.pdf')
 
 if __name__ == '__main__':
 	argh.dispatch_command(main)
