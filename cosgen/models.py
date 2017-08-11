@@ -499,3 +499,10 @@ def squashing_function(array, max=2):
 	idx = np.where(array > max)
 	array[idx] = max
 	return array
+
+def tukey_taper(data,m=15):
+	t=np.arange(0,m,1)
+	w = 0.5*(1+np.cos(np.pi*t/m))
+	result = np.zeros(len(data))
+	result[:m]=w*data[:m]
+	return result
