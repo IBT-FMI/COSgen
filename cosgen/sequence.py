@@ -76,24 +76,24 @@ class Sequence:
 	def add_baseline(self,length,position='initial'):
 		if position=='initial':
 			self.l = np.append(np.zeros(length),self.l)
-			self.seqlen = len(self.l) 
+			self.seqlen = len(self.l)
 		elif position=='terminal':
 			self.l = np.append(self.l,np.zeros(length))
-			self.seqlen = len(slef.l) 
+			self.seqlen = len(slef.l)
 		else:
 			raise ValueError("baseline position can only be 'initial' or 'terminal'. {0} was given.".format(position))
-		
-	def dump(self, path, index=0, TR=1):
+
+	def dump(self, path, index=0, TR=1, name='sequence'):
 		path = os.path.expanduser(path)
-		np.save(os.path.join(path,'sequence'+str(index)+'.npy'),self.l)
-		with open(os.path.join(path,'sequence'+str(index)+'.tsv'),'w+') as f:
+		np.save(os.path.join(path,name+str(index)+'.npy'),self.l)
+		with open(os.path.join(path,name+str(index)+'.tsv'),'w+') as f:
 			f.write('onset\tduration\tfrequency\tpulse_width\tamplitude\tout_channel\n')
 			blocks = self.get_block_representation()
 			for i in blocks:
 				f.write(str(i[0]*TR)+'\t'+str((i[1]-i[0])*TR)+'\t20.0\t0.005\t'+str(self.amplitudes[i[0]])+'\t1\n')
 
 def estimate_optimal_block_size(seqlen, fc):
-	blockseqs = [Sequence(seqlen,seqtype='block',block_size=i) for i in range(1,seqlen+1)]	
+	blockseqs = [Sequence(seqlen,seqtype='block',block_size=i) for i in range(1,seqlen+1)]
 	blockfitnesses = [fc.evaluate_fitness(blockseqs[i]) for i in range(seqlen)]
 	bestblocksize = np.argmax(blockfitnesses)+1
 	return bestblocksize
