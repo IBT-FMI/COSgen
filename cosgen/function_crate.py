@@ -73,10 +73,10 @@ class FunctionCrate:
 		float
 		    Overall fitness.
 		"""
-		
+
 		if len(self.fitness_measures) == 0:
 			raise MissingAttrError("""No fitness measure in this FunctionCrate object {0}.
-					Add fitness measures using the add_fitness_measure method.""".format(self)) 
+					Add fitness measures using the add_fitness_measure method.""".format(self))
 
 		return sum([self.fitness_measures[f](sequence) for f in self.fitness_measures])
 
