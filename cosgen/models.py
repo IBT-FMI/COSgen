@@ -14,14 +14,14 @@ class Model:
 		"""
 		Base class for models.
 
-		This class is the base class can be used to creat 
-		coustomized models for the calculation of fitness 
+		This class is the base class can be used to creat
+		coustomized models for the calculation of fitness
 		measures.
 
 		Parameters
 		----------
 		design_matrix_func : function
-		    Function for generation of design matrix from 
+		    Function for generation of design matrix from
 		    a sequence.
 		cov_beta_func : function
 		    Function returning the covariance matrix of the
@@ -34,14 +34,14 @@ class Model:
 		"""
 		Retrun design matrix for a given sequence.
 
-		This method execute the 'design_matrix_func' given in 
+		This method execute the 'design_matrix_func' given in
 		the initialisation of the object. The parameter types
 		and return types depend on the particular function.
 
 		Parameters
 		----------
 		sequence
-		    Sequence for which the design matrix is to be 
+		    Sequence for which the design matrix is to be
 		    calculated.
 
 		Returns
@@ -51,11 +51,11 @@ class Model:
 		"""
 		return self.design_matrix_func(sequence)
 
-	def cov_beta(self,X):
+	def cov_beta(self, X):
 		"""
 		Retrun covarinace matrix for a given design matrix.
 
-		This method execute the 'cov_beta_func' given in 
+		This method execute the 'cov_beta_func' given in
 		the initialisation of the object. The parameter types
 		and return types depend on the particular function.
 
@@ -78,8 +78,8 @@ class EstimationModel(Model):
 	"""
 	This class implements a model for estimating the hrf.
 
-	The model employes pre-whitening to account for 
-	autocorrelation for the errors. Either 'whitening_mat or 
+	The model employes pre-whitening to account for
+	autocorrelation for the errors. Either 'whitening_mat or
 	'err_cov_mat' must be given.
 
 	Parameters
@@ -91,15 +91,15 @@ class EstimationModel(Model):
 	err_cov_mat : numpy matrix, optional
 	    Error covariance matrix.
 	filterfunc : function
-	    Filter function takes numpy array as input and returns filtered 
+	    Filter function takes numpy array as input and returns filtered
 	    numpy array (c.f. :func:`~cosgen.models.gaussian_highpass`)
 	nonlincorrection : function
 	    Non-linearity correction function, that takes an array like
 	    object as input and returns an array like object
 	    (c.f. :func:`~cosgen.models.suashing_function`)
 	extra_evs : array-like object
-	    Extra explenatory variables in form of a 2D array-like object 
-	    with regressors as collumns. Shapes is 
+	    Extra explenatory variables in form of a 2D array-like object
+	    with regressors as collumns. Shapes is
 	    (number of extra evs, sequence length). If None, a constant regressor
 	    is used for baseline correction.
 	"""
@@ -131,7 +131,7 @@ class EstimationModel(Model):
 		Calculate design matrix.
 
 		This method calculates the desing matrix for a given
-		sequence. Colums of the desing matrix are a constant 
+		sequence. Colums of the desing matrix are a constant
 		(ones) a linear time course and the convolution of the
 		basis vetors with the sequence.
 
@@ -161,8 +161,8 @@ class EstimationModel(Model):
 		"""
 		Calculate covariance of estimators (betas).
 
-		This method calculated the covariance matrix of the 
-		estimators for a given design matrix. It employs 
+		This method calculated the covariance matrix of the
+		estimators for a given design matrix. It employs
 		pre-whitening.
 
 		Parameters
@@ -190,11 +190,11 @@ class EstimationModel(Model):
 
 class DetectionModel(Model):
 	"""
-	This class implements a model for detecting specific 
+	This class implements a model for detecting specific
 	constrasts for a given/known hrf.
 
-	The model employes pre-whitening to account for 
-	autocorrelation for the errors. Either 'whitening_mat or 
+	The model employes pre-whitening to account for
+	autocorrelation for the errors. Either 'whitening_mat or
 	'err_cov_mat' must be given.
 
 	Parameters
@@ -232,7 +232,7 @@ class DetectionModel(Model):
 		Calculate design matrix.
 
 		This method calculates the desing matrix for a given
-		sequence. Colums of the desing matrix are a constant 
+		sequence. Colums of the desing matrix are a constant
 		(ones) a linear time course and the convolution of the
 		hrf with the sequence.
 
@@ -247,13 +247,13 @@ class DetectionModel(Model):
 		    Design matrix.
 		"""
 		ls = len(sequence.l)
-		DM = np.empty((ls,self.n_extra_evs+sequence.nstimtypes))
+		DM = np.empty((ls, self.n_extra_evs+sequence.nstimtypes))
 		DM[:,0:self.n_extra_evs]=self.extra_evs
-		for i in range(1,sequence.nstimtypes+1):
+		for i in range(1, sequence.nstimtypes+1):
 			idx = sequence.l == i
 			tmp = np.zeros(sequence.seqlen)
 			tmp[idx] = sequence.amplitudes[idx]
-			DM[:,self.n_extra_evs + i-1 ] = orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(tmp,self.hrf)[0:ls])))
+			DM[:,self.n_extra_evs + i-1 ] = orthogonalize(self.extra_evs, self.filterfunc(self.nonlincorrection(np.convolve(tmp, self.hrf)[0:ls])))
 		#X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)], dtype=int)
 		#DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(m,self.hrf)[0:ls]))), axis=1, arr=X))
 		return DM
@@ -262,8 +262,8 @@ class DetectionModel(Model):
 		"""
 		Calculate covariance of estimators (betas).
 
-		This method calculated the covariance matrix of the 
-		estimators for a given design matrix. It employs 
+		This method calculated the covariance matrix of the
+		estimators for a given design matrix. It employs
 		pre-whitening.
 
 		Parameters
@@ -277,7 +277,7 @@ class DetectionModel(Model):
 		    Covariance matrix of beta.
 		"""
 		#This is only for pre-whitening and not precoloring
-		Z = np.dot(self.whitening_mat,X)
+		Z = np.dot(self.whitening_mat, X)
 		try:
 			Zpinv = np.linalg.pinv(Z)
 		except np.linalg.linalg.LinAlgError:
@@ -287,14 +287,14 @@ class DetectionModel(Model):
 			print(self.whitening_mat)
 			print('Z:')
 			print(Z)
-		return np.dot(Zpinv,np.transpose(Zpinv))	
+		return np.dot(Zpinv, np.transpose(Zpinv))
 
 
-def get_canonical_basis_set(TR,length,order):
+def get_canonical_basis_set(TR, length, order):
 	#TODO implement properly
 	pass
 
-def get_gamma_basis_set(TR,length,order,a1,b1,a2,b2,c):
+def get_gamma_basis_set(TR, length, order, a1, b1, a2, b2, c):
 	#TODO implement properly
 	t = range(0,length*TR,TR)
 	basis = []
@@ -310,19 +310,19 @@ def get_FIR_basis_set(length):
 	"""
 	return np.identity(length)
 
-def get_bspline_basis_set(TR,length,order):
+def get_bspline_basis_set(TR, length, order):
 	#TODO implement properly
 	pass
 
-def get_fourier_basis_set(TR,length,order):
+def get_fourier_basis_set(TR, length, order):
 	#TODO implement properly
 	pass
 
-def get_ICA_basis_set(TR,length,order):
+def get_ICA_basis_set(TR, length, order):
 	#TODO implement properly
 	pass
 
-def get_gamma_hrf(TR,length,a1=6,a2=16,a3=1,a4=1,a5=1,a6=0):
+def get_gamma_hrf(TR, length, a1=6, a2=16, a3=1, a4=1, a5=1, a6=0):
 	"""
 	Return hrf that is difference of two gamma function.
 
@@ -357,7 +357,7 @@ def get_gamma_hrf(TR,length,a1=6,a2=16,a3=1,a4=1,a5=1,a6=0):
 	np.array
 	    Array with hrf values at multiples of TR.
 	"""
-	t = np.linspace(0,(length-1)*TR,length)-a6
+	t = np.linspace(0, (length-1)*TR, length) - a6
 	const1 = a1/a3
 	const2 = a2/a4
 	denom1 = scipy.special.gamma(const1)*a3**(const1)
@@ -365,7 +365,7 @@ def get_gamma_hrf(TR,length,a1=6,a2=16,a3=1,a4=1,a5=1,a6=0):
 	hrf = t**(const1-1) * np.exp(-t/a3)/denom1 - a5 * t**(const2-1) * np.exp(-t/a4)/denom2
 	return hrf/max(hrf)
 
-def get_ar1_cov(dim,phi):
+def get_ar1_cov(dim, phi):
 	"""
 	Return covariance matrix for first order autoregressive model.
 
@@ -444,14 +444,14 @@ def plot_design_matrix(mat):
 	"""
 	a = int(mat.shape[0]/mat.shape[1])
 	fig, ax = plt.subplots(1)
-	plt.imshow(np.repeat(mat,a,axis=1), cmap='gray')
+	plt.imshow(np.repeat(mat, a, axis=1), cmap='gray')
 	plt.title('Design matrix')
 	ax.set_ylabel('time course [TR]')
 	ax.set_xlabel('Regressors')
 	ax.set_xticklabels([])
 	plt.show()
 
-def orthogonalize(A,v):
+def orthogonalize(A, v):
 	"""
 	Return verctor orthogonalized with respet to coloumn vectors of
 	matrix A.
@@ -474,15 +474,15 @@ def orthogonalize(A,v):
 		return v
 	v = v - A[:,0].dot(v)/A[:,0].dot(A[:,0]) * A[:,0]
 	if A.shape[1] > 1:
-		return orthogonalize(A[:,1:],v)
+		return orthogonalize(A[:,1:], v)
 	else:
 		return v
 
-def gaussian_highpass(data,sigma=225):
+def gaussian_highpass(data, sigma=225):
 	"""
 	Return filtered data.
 
-	This function filters an 1-d array with a gaussian
+	This function filters an 1-d array with a Gaussian
 	high-pass filter.
 
 	Parameters
@@ -490,9 +490,9 @@ def gaussian_highpass(data,sigma=225):
 	data : 1-d array-like object
 	     Input data.
 	sigma : int
-	    Standard deviation of gaussian kernel.
+	    Standard deviation of Gaussian kernel.
 	"""
-	return data - gaussian_filter1d(data,sigma)
+	return data - gaussian_filter1d(data, sigma)
 
 def squashing_function(array, max=2):
 	#TODO documentation
@@ -500,9 +500,41 @@ def squashing_function(array, max=2):
 	array[idx] = max
 	return array
 
-def tukey_taper(data,m=15):
-	t=np.arange(0,m,1)
+def tukey_taper(data, m=15):
+	t=np.arange(0, m, 1)
 	w = 0.5*(1+np.cos(np.pi*t/m))
 	result = np.zeros(len(data))
 	result[:m]=w*data[:m]
 	return result
+
+def volterra_corrected_convolution(seq, kernel0, kernel1, kernel2):
+	"""
+	Compute response to sequence using a Volterra series.
+
+	Calculates the response to a sequence using a second order
+	Volterra series.
+
+	.. math:: y(t) = h_0 + \sum_{i=0}^Th_1(i)seq(t-i) + \sum_{i=0}^T\sum_{j=0}^Th_2(i,j)seq(t-i)seq(t-j)
+
+	For a very simple non-linearity correction: kernel0=0,
+	kernel1=hrf, kernel2=-hrf*hrf.T.
+
+	Parameters
+	----------
+	seq : array like
+	    Sequence.
+	kernel0 : float
+	    Zeroth order Volterra kernel.
+	kernel1 : array like
+	    First order Volterra kernel.
+	kernel2 : array like 2D
+	    Second order Volterra kernel.
+	"""
+	normalresponse = np.convolve(seq, kernel1)
+	conv2d = np.zeros(len(seq)+kernel2.shape[0]-1)
+	for i in range(kernel2.shape[0]):
+		tmp = np.convolve(kernel2[i,:],seq)
+		for t in range(i,len(seq)+i):
+			conv2d[t] += seq[t-i]*tmp[t]
+	volterra_corrected = kernel0 + normalresponse + conv2d
+	return volterra_corrected
