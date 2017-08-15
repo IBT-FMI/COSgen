@@ -72,4 +72,4 @@ class Statistics:
 		np.savez(os.path.join(self.storage_path,'stats.npz'),
 			self.max_fitness,
 			self.average_fitness,
-			self.population_diversity) 
+			self.population_diversity)
