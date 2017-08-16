@@ -104,12 +104,12 @@ class EstimationModel(Model):
 	    is used for baseline correction.
 	"""
 
-	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, nonlincorrection=lambda x: x, extra_evs=None):
+	def __init__(self, basis_set, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, convolution_func=np.convolve, extra_evs=None):
 		self.basis_set = basis_set
 		for i in range(len(basis_set)):
 			self.basis_set[i]=self.basis_set[i]/float(self.basis_set[i].max())
 		self.filterfunc = filterfunc
-		self.nonlincorrection = nonlincorrection
+		self.convolution_func = convolution_func
 		if whitening_mat is not None:
 			self.whitening_mat = np.matrix(whitening_mat)
 		elif err_cov_mat is not None:
@@ -154,7 +154,8 @@ class EstimationModel(Model):
 			tmp = np.zeros(sequence.seqlen)
 			tmp[idx] = sequence.amplitudes[idx]
 			for j in range(lb):
-				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(self.nonlincorrection(np.convolve(tmp, self.basis_set[j])[0:ls]))
+				conv = self.convolution_func(tmp, self.basis_set[j])
+				DM[:, self.n_extra_evs + lb * (i-1) + j] = self.filterfunc(conv[0:ls])
 		return DM
 
 	def cov_beta(self, X):
@@ -207,10 +208,10 @@ class DetectionModel(Model):
 	    Error covariance matrix.
 	"""
 
-	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, nonlincorrection=lambda x: x, extra_evs=None):
+	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, convolution_func=np.convolve, extra_evs=None):
 		self.hrf = hrf/float(hrf.max())
 		self.filterfunc = filterfunc
-		self.nonlincorrection = nonlincorrection
+		self.convolution_func = convolution_func
 		if whitening_mat is not None:
 			self.whitening_mat = np.matrix(whitening_mat)
 		elif err_cov_mat is not None:
@@ -253,9 +254,11 @@ class DetectionModel(Model):
 			idx = sequence.l == i
 			tmp = np.zeros(sequence.seqlen)
 			tmp[idx] = sequence.amplitudes[idx]
-			DM[:,self.n_extra_evs + i-1 ] = orthogonalize(self.extra_evs, self.filterfunc(self.nonlincorrection(np.convolve(tmp, self.hrf)[0:ls])))
-		#X = np.array([sequence.l == i for i in range(1,sequence.nstimtypes+1)], dtype=int)
-		#DM[:,self.n_extra_evs:] = np.transpose(np.apply_along_axis(lambda m: orthogonalize(self.extra_evs,self.filterfunc(self.nonlincorrection(np.convolve(m,self.hrf)[0:ls]))), axis=1, arr=X))
+			try:
+				conv = self.convolution_func(tmp, self.hrf)
+			except TypeError:
+				conv = self.convolution_func(tmp)
+			DM[:,self.n_extra_evs + i-1 ] = orthogonalize(self.extra_evs, self.filterfunc(conv[0:ls]))
 		return DM
 
 	def cov_beta(self, X):
@@ -507,7 +510,7 @@ def tukey_taper(data, m=15):
 	result[:m]=w*data[:m]
 	return result
 
-def volterra_corrected_convolution(seq, kernel0, kernel1, kernel2):
+def volterra_corrected_convolution(seq, kernel1, kernel0=None, kernel2=None, const=-0.3):
 	"""
 	Compute response to sequence using a Volterra series.
 
@@ -523,13 +526,24 @@ def volterra_corrected_convolution(seq, kernel0, kernel1, kernel2):
 	----------
 	seq : array like
 	    Sequence.
-	kernel0 : float
-	    Zeroth order Volterra kernel.
 	kernel1 : array like
 	    First order Volterra kernel.
-	kernel2 : array like 2D
+	kernel0 : float, optional
+	    Zeroth order Volterra kernel.
+	    Default is 0.
+	kernel2 : array like 2D, optional
 	    Second order Volterra kernel.
+	    Default is cont*kernel1*kernel1.T.
+	const : float, optional
+	    Constant for construction of kernel2.
+	    Default is -0.3.
 	"""
+	if kernel0 is None:
+		kernel0=0
+	if kernel2 is None:
+		colv = np.reshape(kernel1,(len(kernel1),1))
+		rowv = np.reshape(kernel1,(1,len(kernel1)))
+		kernel2=np.dot(const*colv,rowv)
 	normalresponse = np.convolve(seq, kernel1)
 	conv2d = np.zeros(len(seq)+kernel2.shape[0]-1)
 	for i in range(kernel2.shape[0]):
