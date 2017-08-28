@@ -45,8 +45,8 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_
 		immigrants.append(seq)
 	return immigrants
 
-def generate_block_immigrants(nimmigrants, seqlen, nstimtypes, block_size, block_sigma, gap_sigma, amplitudes=None):
+def generate_block_immigrants(nimmigrants, seqlen, nstimtypes, block_size, gap_size, block_sigma=None, gap_sigma=0, amplitudes=None):
 	immigrants = []
 	for i in range(nimmigrants):
-		immigrants.append(sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size, amplitudes=amplitudes, block_sigma=block_sigma, gap_sigma=gap_sigma))
+		immigrants.append(sequence.Sequence(seqlen, nstimtypes, seqtype='block', amplitudes=amplitudes, block_size=block_size, block_sigma=block_sigma, gap_size=gap_size, gap_sigma=gap_sigma))
 	return immigrants
