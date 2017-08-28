@@ -7,7 +7,7 @@ except ImportError:
 
 import numpy as np
 
-def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_fct, amplitudes=None):
+def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, gap_size, cross_over_fct, block_sigma=None, gap_sigma=0, amplitudes=None):
 	"""
 	Generate immigrants.
 
@@ -35,14 +35,16 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, cross_over_
 	    List of sequence according to parameters.
 	"""
 	immigrants = []
+	immigrants.extend(generate_block_immigrants(nimmigrants, seqlen, nstimtypes, block_size, gap_size, block_sigma, gap_sigma, amplitudes))
 	for i in range(nimmigrants):
 		randseq = sequence.Sequence(seqlen, nstimtypes, seqtype='random',amplitudes=amplitudes)
-		blockseq = sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size, amplitudes=amplitudes)
+		blockseq = sequence.Sequence(seqlen, nstimtypes, seqtype='block', block_size=block_size, gap_size=gap_size, block_sigma=block_sigma, gap_sigma=gap_sigma, amplitudes=amplitudes)
 		if np.random.rand()<0.5:
 			seq = cross_over_fct(randseq, blockseq)
 		else:
 			seq = cross_over_fct(blockseq, randseq)
 		immigrants.append(seq)
+		immigrants.append(sequence.Sequence(seqlen, nstimtypes, seqtype='random',amplitudes=amplitudes))
 	return immigrants
 
 def generate_block_immigrants(nimmigrants, seqlen, nstimtypes, block_size, gap_size, block_sigma=None, gap_sigma=0, amplitudes=None):

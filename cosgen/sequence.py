@@ -6,7 +6,7 @@ class BlockSizeError(Exception):
 	pass
 
 class Sequence:
-	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, amplitudes=None, block_size=None, block_sigma=0, gap_sigma=0):
+	def __init__(self, seqlen=None, nstimtypes=1, seqtype='random', l=None, amplitudes=None, block_size=None, block_sigma=0, gap_size=None, gap_sigma=0):
 		self.fitness = np.nan
 		self.nstimtypes = nstimtypes
 		if l is not None:
@@ -14,7 +14,7 @@ class Sequence:
 			self.seqlen = len(l)
 			self.amplitudes = np.zeros(self.seqlen)
 			idx = np.nonzero(self.l)
-			if len(amplitudes)==1 and amplitudes=='random':
+			if type(amplitudes)==str and amplitudes=='random':
 				self.amplitudes[idx] = np.random.choice(np.linspace(0,1,256),len(idx))
 			elif amplitudes is not None:
 				self.amplitudes = np.array(amplitudes)
@@ -36,26 +36,46 @@ class Sequence:
 		elif seqtype=='block':
 			if block_size is None:
 				raise BlockSizeError("block_size must be set if seqtype is 'block'")
+			if gap_size is None:
+				gap_size = block_size
 			self.l = np.empty(seqlen)
 			self.amplitudes = np.zeros(seqlen)
 			self.seqlen = seqlen
 			position=0
-			if amplitudes=='random':
-				while position<seqlen:
-					block_len = max(int(np.random.normal(block_size,block_sigma)),1)
-					self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
-					self.amplitudes[position:min(position+block_len,seqlen)] = np.random.choice(np.linspace(0,1,256),1)
-					block_gap = max(int(np.random.normal(block_size,gap_sigma)),1)
-					self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
-					position += block_len+block_gap
+			if type(amplitudes)==str and  amplitudes=='random':
+				if type(block_size) != list:
+					while position<seqlen:
+						block_len = max(int(np.random.normal(block_size,block_sigma)),1)
+						self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
+						self.amplitudes[position:min(position+block_len,seqlen)] = np.random.choice(np.linspace(0,1,256),1)
+						block_gap = max(int(np.random.normal(gap_size,gap_sigma)),1)
+						self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
+						position += block_len+block_gap
+				else:
+					while position<seqlen:
+						block_len = np.random.choice(block_size)
+						self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
+						self.amplitudes[position:min(position+block_len,seqlen)] = np.random.choice(np.linspace(0,1,256),1)
+						block_gap = max(int(np.random.normal(gap_size,gap_sigma)),1)
+						self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
+						position += block_len+block_gap
 			else:
-				while position<seqlen:
-					block_len = max(int(np.random.normal(block_size,block_sigma)),1)
-					self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
-					self.amplitudes[position:min(position+block_len,seqlen)] = 1
-					block_gap = max(int(np.random.normal(block_size,gap_sigma)),1)
-					self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
-					position += block_len+block_gap
+				if type(block_size) != list:
+					while position<seqlen:
+						block_len = max(int(np.random.normal(block_size,block_sigma)),1)
+						self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
+						self.amplitudes[position:min(position+block_len,seqlen)] = 1
+						block_gap = max(int(np.random.normal(gap_size,gap_sigma)),1)
+						self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
+						position += block_len+block_gap
+				else:
+					while position<seqlen:
+						block_len = np.random.choice(block_size)
+						self.l[position:min(position+block_len,seqlen)] = random.randint(1,nstimtypes)
+						self.amplitudes[position:min(position+block_len,seqlen)] = 1
+						block_gap = max(int(np.random.normal(gap_size,gap_sigma)),1)
+						self.l[position+block_len:min(position+block_len+block_gap,seqlen)] = 0
+						position += block_len+block_gap
 		elif seqtype=='m':
 			#TODO implement m sequences
 			pass
