@@ -32,7 +32,7 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 	"""
 	Run default optimization.
 
-	This function attempts to optimize find a good sequence with only few input parameters.
+	This function attempts to optimize towards a viable sequence, while only requiring few input parameters.
 	It uses a generic design matrix construction and a first order autoregressive model.
 
 	Parameters

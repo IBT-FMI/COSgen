@@ -76,7 +76,7 @@ class Model:
 
 class EstimationModel(Model):
 	"""
-	This class implements a model for estimating the hrf.
+	This class implements a model for estimating the Haemodynamic Response Function (HRF).
 
 	The model employes pre-whitening to account for
 	autocorrelation for the errors. Either 'whitening_mat or
@@ -191,7 +191,7 @@ class EstimationModel(Model):
 class DetectionModel(Model):
 	"""
 	This class implements a model for detecting specific
-	constrasts for a given/known hrf.
+	constrasts for a given/known Haemodynamic Response Function (HRF).
 
 	Unless otherwise specified the parameters and returns are the same
 	as for EstimationModel.
@@ -228,8 +228,8 @@ class DetectionModel(Model):
 
 		This method calculates the desing matrix for a given
 		sequence. Colums of the desing matrix are a constant
-		(ones) a linear time course and the convolution of the
-		hrf with the sequence.
+		(ones) a linear time course and the convolution of `hrf`
+		with the sequence.
 
 		Parameters
 		----------
@@ -321,9 +321,9 @@ def get_FIR_basis_set(length):
 
 def get_gamma_hrf(TR, length, a1=6, a2=16, a3=1, a4=1, a5=1, a6=0):
 	"""
-	Return hrf that is difference of two gamma function.
+	Return Haemodynamic Response Function (HRF) that is difference of two gamma function.
 
-	This function returns an hrf array constructed using the following
+	This function returns an HRF array constructed using the following
 	formula\:
 
 	..  math::  h(t) = \\frac{(t-a_6)^{a_1/a_3-1}\\exp(-(t-a_6)/a_3)}{\\Gamma (a_1/a_3)a_3^{a_1/a_3}} - a_5\\frac{(t-a_6)^{a_2/a_4-1}\\exp(-(t-a_6)/a_4)}{\\Gamma (a_2/a_4)a_4^{a_2/a_4}}

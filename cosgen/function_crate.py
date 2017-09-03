@@ -8,17 +8,17 @@ class MissingAttrError(Exception):
 	pass
 
 class WrongOrderError(Exception):
-	"""This error is raised if the functions are added to a
+	"""This error is raised if functions are added to a
 	FunctionCrate object in the wrong order."""
 	pass
 
 class RmAttrError(Exception):
-	"""This error is raised if an attribut of a FunctionCrate object
+	"""This error is raised if an attribute of a FunctionCrate object
 	can not be removed because it does not exist."""
 	pass
 
 class OverwriteAttrError(Exception):
-	"""This error is raised if an attribut of a FunctionCrate object
+	"""This error is raised if an attribute of a FunctionCrate object
 	already exist."""
 	pass
 
@@ -36,7 +36,7 @@ def partition(population, left, right, pivotIndex):
 	return storeIndex
 
 def quickselect(population, left, right, k):
-	"""Returns the k-th smallest, (k >= 0), element of population within population[left:right+1] inclusive.
+	"""Returns the k-th smallest, (k >= 0), element of `population` within `population[left:right+1]` inclusive.
 	Implementation of the quickselect algorithm from https://rosettacode.org/wiki/Quickselect_algorithm#Python."""
 	while True:
 		pivotIndex = random.randint(left, right)     # select pivotIndex between left and right
@@ -85,7 +85,7 @@ class FunctionCrate:
 		"""
 		Find n best sequences in population.
 
-		This method finds the n sequences with the highest fitness in population.
+		This method finds the n sequences with the highest fitness in the population.
 
 		Parameters
 		----------
@@ -107,7 +107,7 @@ class FunctionCrate:
 		Add fitness measure function to object.
 
 		This method adds a fitness measure function to the
-		object, that is used in the evaluate fitness method. The
+		object, that is used in the `evaluate_fitness` method. The
 		function must take a sequences as parameter and retrun a
 		float.
 
@@ -144,7 +144,7 @@ class FunctionCrate:
 		"""
 		Set a mutate function.
 
-		This methode sets a mutate function used by the genetic
+		This method sets a mutate function used by the genetic
 		algorithm. The function should normally take a
 		cosgen.sequence.Sequence object as input and return a
 		cosgen.sequence.Sequence object.
@@ -173,7 +173,7 @@ class FunctionCrate:
 		"""
 		Set a cross over function.
 
-		This methode sets a cross over function used by the
+		This method sets a cross over function used by the
 		genetic algorithm. The function should normally take two
 		cosgen.sequence.Sequence objects as input and return a
 		cosgen.sequence.Sequence object.
@@ -202,7 +202,7 @@ class FunctionCrate:
 		"""
 		Set a generate immigrants function.
 
-		This methode sets a generate immigrants function used by
+		This method sets a generate immigrants function used by
 		the genetic algorithm. The function should normally return
 		a list of cosgen.sequence.Sequence objects. If the
 		function as an argument 'cross_over_fct' a cross over
