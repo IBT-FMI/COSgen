@@ -29,7 +29,43 @@ import datetime
 import numpy as np
 
 def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1, model_type='detection', autoregression=0.5, baseline='auto'):
+	"""
+	Run default optimization.
 
+	This function attempts to optimize find a good sequence with only few input parameters.
+	It uses a generic design matrix construction and a first order autoregressive model.
+
+	Parameters
+	----------
+	population_size : int
+	    Size of the population used for the genetic algorithm.
+	library_size : int
+	    Number of sequences included in the output. The library_size best
+	    sequences are saved.
+	storage_path : string
+	    Path to folder where output is saved.
+	seqlength : int
+	    Length of the sequence that is optimized.
+	nstimtypes : int
+	    Number of possible stimulus types in the sequence.
+	generations : int
+	    Number of iterations the genetic algorithm performs.
+	survivors : int
+	    Number of sequences that are carried over from the previous iteration.
+	nimmigrants : int
+	    Number of new (randomly generated) sequences add in each iteration.
+	hrflength : int
+	    Length of the HRF.
+	TR : float
+	    Repetition time of scans in seconds.
+	model_type : string
+	    Can be 'detection' in order to optimize for contrast detection
+	    or 'estimation' for HRF estimation.
+	autoregression : float
+	    Coefficient of the fist order autoregressive noise model.
+	baseline : string or int
+	    Number of baseline TR before the stimulation starts. Can be 'auto'.
+	"""
 	storage_path = os.path.expanduser(storage_path)
 	storage_path = os.path.join(storage_path,'{:%Y%m%d%H%M%S}'.format(datetime.datetime.now()))
 	try:

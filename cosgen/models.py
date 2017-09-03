@@ -53,7 +53,7 @@ class Model:
 
 	def cov_beta(self, X):
 		"""
-		Retrun covarinace matrix for a given design matrix.
+		Retrun covariance matrix for a given design matrix.
 
 		This method execute the 'cov_beta_func' given in
 		the initialisation of the object. The parameter types
@@ -67,8 +67,8 @@ class Model:
 
 		Returns
 		-------
-		covarince matrix
-		    Covarnace matrix for the given design matrix.
+		covariance matrix
+		    Covariance matrix for the given design matrix.
 		"""
 		return self.cov_beta_func(X)
 
@@ -93,10 +93,9 @@ class EstimationModel(Model):
 	filterfunc : function
 	    Filter function takes numpy array as input and returns filtered
 	    numpy array (c.f. :func:`~cosgen.models.gaussian_highpass`)
-	nonlincorrection : function
-	    Non-linearity correction function, that takes an array like
-	    object as input and returns an array like object
-	    (c.f. :func:`~cosgen.models.suashing_function`)
+	convolution_func : function
+	    Function used for convolution of HRF and sequence. Can be
+	    changed in order to correct for non-linearity.
 	extra_evs : array-like object
 	    Extra explenatory variables in form of a 2D array-like object
 	    with regressors as collumns. Shapes is
@@ -162,7 +161,7 @@ class EstimationModel(Model):
 		"""
 		Calculate covariance of estimators (betas).
 
-		This method calculated the covariance matrix of the
+		This method calculates the covariance matrix of the
 		estimators for a given design matrix. It employs
 		pre-whitening.
 
@@ -194,18 +193,13 @@ class DetectionModel(Model):
 	This class implements a model for detecting specific
 	constrasts for a given/known hrf.
 
-	The model employes pre-whitening to account for
-	autocorrelation for the errors. Either 'whitening_mat or
-	'err_cov_mat' must be given.
+	Unless otherwise specified the parameters and returns are the same
+	as for EstimationModel.
 
 	Parameters
 	----------
-	hrf : numpy array
-	    Array with hrf values at multiples of TR.
-	whitening_mat : numpy matrix, optional
-	    Whitening matrix.
-	err_cov_mat : numpy matrix, optional
-	    Error covariance matrix.
+	hrf : np.array
+	    HRF values at multiples of TR.
 	"""
 
 	def __init__(self, hrf, whitening_mat=None, err_cov_mat=None, filterfunc=lambda x: x, convolution_func=np.convolve, extra_evs=None):
@@ -265,7 +259,7 @@ class DetectionModel(Model):
 		"""
 		Calculate covariance of estimators (betas).
 
-		This method calculated the covariance matrix of the
+		This method calculates the covariance matrix of the
 		estimators for a given design matrix. It employs
 		pre-whitening.
 
@@ -293,14 +287,14 @@ class DetectionModel(Model):
 		return np.dot(Zpinv, np.transpose(Zpinv))
 
 
-def get_canonical_basis_set(TR, length, order):
-	#TODO implement properly
-	pass
-
-def get_gamma_basis_set(TR, length, order, a1, b1, a2, b2, c):
-	#TODO implement properly
-	t = range(0,length*TR,TR)
-	basis = []
+#def get_canonical_basis_set(TR, length, order):
+#	#TODO implement properly
+#	pass
+#
+#def get_gamma_basis_set(TR, length, order, a1, b1, a2, b2, c):
+#	#TODO implement properly
+#	t = range(0,length*TR,TR)
+#	basis = []
 
 def get_FIR_basis_set(length):
 	"""
@@ -313,17 +307,17 @@ def get_FIR_basis_set(length):
 	"""
 	return np.identity(length)
 
-def get_bspline_basis_set(TR, length, order):
-	#TODO implement properly
-	pass
-
-def get_fourier_basis_set(TR, length, order):
-	#TODO implement properly
-	pass
-
-def get_ICA_basis_set(TR, length, order):
-	#TODO implement properly
-	pass
+#def get_bspline_basis_set(TR, length, order):
+#	#TODO implement properly
+#	pass
+#
+#def get_fourier_basis_set(TR, length, order):
+#	#TODO implement properly
+#	pass
+#
+#def get_ICA_basis_set(TR, length, order):
+#	#TODO implement properly
+#	pass
 
 def get_gamma_hrf(TR, length, a1=6, a2=16, a3=1, a4=1, a5=1, a6=0):
 	"""
@@ -366,7 +360,7 @@ def get_gamma_hrf(TR, length, a1=6, a2=16, a3=1, a4=1, a5=1, a6=0):
 	denom1 = scipy.special.gamma(const1)*a3**(const1)
 	denom2 = scipy.special.gamma(const2)*a4**(const2)
 	hrf = t**(const1-1) * np.exp(-t/a3)/denom1 - a5 * t**(const2-1) * np.exp(-t/a4)/denom2
-	return hrf/max(hrf)
+	return hrf/sum(hrf)
 
 def get_ar1_cov(dim, phi):
 	"""
@@ -498,12 +492,31 @@ def gaussian_highpass(data, sigma=225):
 	return data - gaussian_filter1d(data, sigma)
 
 def squashing_function(array, max=2):
-	#TODO documentation
+	"""
+	Reduce all values in 'array' bigger than 'max' to 'max'.
+
+	Parameters
+	----------
+	array : array like
+	    Array of vlaues to be squashes.
+	max : float
+	    Maximum value used for squashing.
+	"""
 	idx = np.where(array > max)
 	array[idx] = max
 	return array
 
 def tukey_taper(data, m=15):
+	"""
+	Apply Tukey window of length 'm' to 'data'.
+
+	Parameters
+	----------
+	data : array like
+	    Data to be windowed.
+	m : int
+	    Length of Tukey window.
+	"""
 	t=np.arange(0, m, 1)
 	w = 0.5*(1+np.cos(np.pi*t/m))
 	result = np.zeros(len(data))

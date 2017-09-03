@@ -8,7 +8,7 @@ class OptimalityError(Exception):
 def estimator_variance(sequence, model, optimality, contrast=None, normalization=1):
 	"""
 	The optimality of the estimator variances.
-	
+
 	This function calculates the a- or d-optimality value of the
 	covariance matrix of the estimators.
 
@@ -30,7 +30,7 @@ def estimator_variance(sequence, model, optimality, contrast=None, normalization
 	    optimality value
 	"""
 	X = model.design_matrix(sequence)
-	
+
 	covariance_beta = model.cov_beta(X)
 
 	if contrast is not None:

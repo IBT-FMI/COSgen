@@ -12,7 +12,7 @@ def cross_over(sequence1, sequence2):
 	"""
 	Create offspring of sequence1 and sequence2.
 
-	This function creats and offspring of sequence1 and sequence2 by
+	This function creats an offspring of sequence1 and sequence2 by
 	cutting them at a random point and merging the two ends.
 
 	Parameters
