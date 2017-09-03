@@ -453,7 +453,7 @@ def orthogonalize(A, v):
 	Return vector orthogonalized with respect to column vectors of
 	matrix `A`.
 
-	*CAVE*: `A` must contain already orthogonalized column vectors!!
+	Beware `A` must contain already orthogonalized column vectors!!
 
 	Parameters
 	----------
