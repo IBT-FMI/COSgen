@@ -4,7 +4,7 @@ COSgen
 
 Overview
 ========
-Contrast optimized stimulus generator (COSgen) is a highly parameterized genetic algorithm implementation to produce optimized stimulus sequences for clinical and preclinical fMRI.
+COSgen (Contrast optimized stimulus generator) is a highly parameterized genetic algorithm implementation to produce optimized stimulus sequences for human and animal fMRI.
 Our package is fully compatible with a pure Micro/Python stimulus delivery solution (COSplay), and provides a convenient and well documented API. Because of its modular structure, the implementation is highly adaptable for specific use cases.
 
 
