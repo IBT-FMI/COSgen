@@ -32,9 +32,9 @@ class Model:
 
 	def design_matrix(self, sequence):
 		"""
-		Retrun design matrix for a given sequence.
+		Retrun design matrix for a given `sequence`.
 
-		This method executes the 'design_matrix_func' given in
+		This method executes the `design_matrix_func` given in
 		the initialisation of the object. The parameter types
 		and return types depend on the particular function.
 
@@ -53,15 +53,15 @@ class Model:
 
 	def cov_beta(self, X):
 		"""
-		Retrun covariance matrix for a given design matrix.
+		Retrun covariance matrix for a given design matrix `X`.
 
-		This method executes the 'cov_beta_func' given in
+		This method executes the `cov_beta_func` given in
 		the initialisation of the object. The parameter types
 		and return types depend on the particular function.
 
 		Parameters
 		----------
-		design matrix
+		X : design matrix
 		    Design matrix for which the covariance matrix is to be
 		    calculated.
 
@@ -79,8 +79,8 @@ class EstimationModel(Model):
 	This class implements a model for estimating the Haemodynamic Response Function (HRF).
 
 	The model employes pre-whitening to account for
-	autocorrelation for the errors. Either 'whitening_mat or
-	'err_cov_mat' must be given.
+	autocorrelation for the errors. Either `whitening_mat` or
+	`err_cov_mat` must be given.
 
 	Parameters
 	----------
@@ -130,9 +130,9 @@ class EstimationModel(Model):
 		Calculate design matrix.
 
 		This method calculates the desing matrix for a given
-		sequence. Colums of the desing matrix are a constant
+		`sequence`. Colums of the desing matrix are a constant
 		(ones) a linear time course and the convolution of the
-		basis vetors with the sequence.
+		basis vetors with the `sequence`.
 
 		Parameters
 		----------
@@ -162,7 +162,7 @@ class EstimationModel(Model):
 		Calculate covariance of estimators (betas).
 
 		This method calculates the covariance matrix of the
-		estimators for a given design matrix. It employs
+		estimators for a given design matrix `X`. It employs
 		pre-whitening.
 
 		Parameters
@@ -194,7 +194,7 @@ class DetectionModel(Model):
 	constrasts for a given/known Haemodynamic Response Function (HRF).
 
 	Unless otherwise specified the parameters and returns are the same
-	as for EstimationModel.
+	as for `EstimationModel`.
 
 	Parameters
 	----------
@@ -226,8 +226,8 @@ class DetectionModel(Model):
 		"""
 		Calculate design matrix.
 
-		This method calculates the desing matrix for a given
-		sequence. Colums of the desing matrix are a constant
+		This method calculates the design matrix for a given
+		`sequence`. Columns of the design matrix are a constant
 		(ones) a linear time course and the convolution of `hrf`
 		with the sequence.
 
@@ -260,7 +260,7 @@ class DetectionModel(Model):
 		Calculate covariance of estimators (betas).
 
 		This method calculates the covariance matrix of the
-		estimators for a given design matrix. It employs
+		estimators for a given design matrix `X`. It employs
 		pre-whitening.
 
 		Parameters
@@ -432,7 +432,7 @@ def get_autocorr_whitening_mat(acf, epsilon=1e-10):
 
 def plot_design_matrix(mat):
 	"""
-	Show grayscale plot of design matrix.
+	Show gray scale plot of design matrix.
 
 	Parameters
 	----------
@@ -450,10 +450,10 @@ def plot_design_matrix(mat):
 
 def orthogonalize(A, v):
 	"""
-	Return verctor orthogonalized with respect to coloumn vectors of
-	matrix A.
+	Return vector orthogonalized with respect to column vectors of
+	matrix `A`.
 
-	*CAVE*: A must contain already orthogonalized column vectors!!
+	*CAVE*: `A` must contain already orthogonalized column vectors!!
 
 	Parameters
 	----------
@@ -493,7 +493,7 @@ def gaussian_highpass(data, sigma=225):
 
 def squashing_function(array, max=2):
 	"""
-	Reduce all values in 'array' bigger than 'max' to 'max'.
+	Reduce all values in `array` bigger than `max` to `max`.
 
 	Parameters
 	----------
@@ -508,7 +508,7 @@ def squashing_function(array, max=2):
 
 def tukey_taper(data, m=15):
 	"""
-	Apply Tukey window of length 'm' to 'data'.
+	Apply Tukey window of length `m` to `data`.
 
 	Parameters
 	----------

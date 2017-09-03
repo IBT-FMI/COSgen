@@ -26,7 +26,7 @@ class Statistics:
 
 	def add(self,population):
 		"""
-		Add population statistics to log.
+		Add `population`'s statistics to log.
 
 		This function stores the maximum fitness, average fitness,
 		and the population diversity (average hamming distance).

@@ -7,9 +7,9 @@ class InvalidFractionError(Exception):
 
 def mutate(sequence, mutation_fraction, include_amplitudes=False):
 	"""
-	Mutate sequence with given probability.
+	Mutate `sequence` with given probability.
 
-	This function randomly changes 'mutation_fraction' of the entires
+	This function randomly changes `mutation_fraction` of the entires
 	of the sequence given and returns the changes sequence.
 
 	Parameters

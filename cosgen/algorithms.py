@@ -16,7 +16,7 @@ def ga(population,functions,generations,nsurvive,nimmigrants,stat,print_freq=100
 	"""
 	Run genetic algorithm.
 
-	This function runs a genetic algorithm on a population with the
+	This function runs a genetic algorithm on `population` with the
 	given arguments.
 
 	Parameters

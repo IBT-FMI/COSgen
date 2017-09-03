@@ -83,9 +83,9 @@ class FunctionCrate:
 	@staticmethod
 	def find_best(population, n):
 		"""
-		Find n best sequences in population.
+		Find `n` best sequences in `population`.
 
-		This method finds the n sequences with the highest fitness in the population.
+		This method finds the `n` sequences with the highest fitness in the `population`.
 
 		Parameters
 		----------
@@ -128,7 +128,7 @@ class FunctionCrate:
 		Remove fitness measure.
 
 		This method removes a fitness measure previously added
-		with the add_fitness_measure method.
+		with the `add_fitness_measure` method.
 
 		Parameters
 		----------
@@ -146,8 +146,8 @@ class FunctionCrate:
 
 		This method sets a mutate function used by the genetic
 		algorithm. The function should normally take a
-		cosgen.sequence.Sequence object as input and return a
-		cosgen.sequence.Sequence object.
+		`cosgen.sequence.Sequence` object as input and return a
+		`cosgen.sequence.Sequence` object.
 
 		Parameters
 		----------
@@ -163,7 +163,7 @@ class FunctionCrate:
 		Delete mutate function.
 
 		This methods deletes the function added using the
-		set_mutate method.
+		`set_mutate` method.
 		"""
 		if not hasattr(self, 'mutate'):
 			raise RmAttrError('Cannot remove attribute that was not set.')
@@ -175,8 +175,8 @@ class FunctionCrate:
 
 		This method sets a cross over function used by the
 		genetic algorithm. The function should normally take two
-		cosgen.sequence.Sequence objects as input and return a
-		cosgen.sequence.Sequence object.
+		`cosgen.sequence.Sequence` objects as input and return a
+		`cosgen.sequence.Sequence` object.
 
 		Parameters
 		----------
@@ -192,7 +192,7 @@ class FunctionCrate:
 		Delete cross over function.
 
 		This methods deletes the function added using the
-		set_cross_over method.
+		`set_cross_over` method.
 		"""
 		if not hasattr(self, 'cross_over'):
 			raise RmAttrError('Cannot remove attribute that was not set.')
@@ -204,11 +204,11 @@ class FunctionCrate:
 
 		This method sets a generate immigrants function used by
 		the genetic algorithm. The function should normally return
-		a list of cosgen.sequence.Sequence objects. If the
-		function as an argument 'cross_over_fct' a cross over
-		function has to be set in advance using the set_cross_over
-		method. The 'cross_over_fct' parameter is then fixed to
-		this function.
+		a list of `cosgen.sequence.Sequence` objects. `function`
+		may uses a cross over function for the construction
+		of immigrants. If `function` has a parameter
+		'cross_over_fct' it is automatically set to the function
+		previously set with `set_cross_over`.
 
 		Parameters
 		----------
@@ -237,7 +237,7 @@ class FunctionCrate:
 		Delete generate immigrants function.
 
 		This methods deletes the function added using the
-		set_generate_immigrants method.
+		`set_generate_immigrants` method.
 		"""
 		if not hasattr(self,'generate_immigrants'):
 			raise RmAttrError('Cannot remove attribute that was not set.')

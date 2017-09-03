@@ -11,7 +11,7 @@ def generate_immigrants(nimmigrants, seqlen, nstimtypes, block_size, gap_size, c
 	"""
 	Generate immigrants.
 
-	This function generates 3 times 'nimmigrants' sequences partially
+	This function generates 3 times `nimmigrants` sequences partially
 	consisting of block and a random sequences as well as a mixture
 	of both types.
 
@@ -60,7 +60,7 @@ def generate_block_immigrants(nimmigrants, seqlen, nstimtypes, block_size, gap_s
 	"""
 	Generate block type immigrants.
 
-	This function generates 'nimmigrants' block design sequences.
+	This function generates `nimmigrants` block design sequences.
 
 	Parameters
 	----------
