@@ -34,7 +34,7 @@ class Model:
 		"""
 		Retrun design matrix for a given sequence.
 
-		This method execute the 'design_matrix_func' given in
+		This method executes the 'design_matrix_func' given in
 		the initialisation of the object. The parameter types
 		and return types depend on the particular function.
 
@@ -55,7 +55,7 @@ class Model:
 		"""
 		Retrun covariance matrix for a given design matrix.
 
-		This method execute the 'cov_beta_func' given in
+		This method executes the 'cov_beta_func' given in
 		the initialisation of the object. The parameter types
 		and return types depend on the particular function.
 
@@ -328,7 +328,7 @@ def get_gamma_hrf(TR, length, a1=6, a2=16, a3=1, a4=1, a5=1, a6=0):
 
 	..  math::  h(t) = \\frac{(t-a_6)^{a_1/a_3-1}\\exp(-(t-a_6)/a_3)}{\\Gamma (a_1/a_3)a_3^{a_1/a_3}} - a_5\\frac{(t-a_6)^{a_2/a_4-1}\\exp(-(t-a_6)/a_4)}{\\Gamma (a_2/a_4)a_4^{a_2/a_4}}
 
-	Defaults are the same as used by SPM. The maximum is normalized to 1.
+	Defaults are the same as those used by SPM. The maximum is normalized to 1.
 
 	Parameters
 	----------
@@ -450,7 +450,7 @@ def plot_design_matrix(mat):
 
 def orthogonalize(A, v):
 	"""
-	Return verctor orthogonalized with respet to coloumn vectors of
+	Return verctor orthogonalized with respect to coloumn vectors of
 	matrix A.
 
 	*CAVE*: A must contain already orthogonalized column vectors!!
