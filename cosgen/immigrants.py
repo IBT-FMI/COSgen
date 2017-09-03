@@ -1,4 +1,4 @@
-"""This file contains the function neccessary to generate immigrants.
+"""This file contains the function necessary to generate immigrants.
 Any alternative functions should be added here."""
 try:
 	import cosgen.sequence as sequence

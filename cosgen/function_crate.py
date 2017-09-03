@@ -108,7 +108,7 @@ class FunctionCrate:
 
 		This method adds a fitness measure function to the
 		object, that is used in the `evaluate_fitness` method. The
-		function must take a sequences as parameter and retrun a
+		function must take a sequences as parameter and return a
 		float.
 
 		Parameters
@@ -220,14 +220,14 @@ class FunctionCrate:
 		try:
 			if 'cross_over_fct' in (inspect.getfullargspec(function).args + inspect.getfullargspec(function).kwonlyargs):
 				if not hasattr(self, 'cross_over'):
-					raise WrongOrderError('cross_over function has to be set before set_generate_imigrants can be used')
+					raise WrongOrderError('cross_over function has to be set before set_generate_immigrants can be used')
 				setattr(self,'generate_immigrants', partial(function,cross_over_fct=self.cross_over))
 			else:
 				setattr(self,'generate_immigrants', function)
 		except AttributeError:
 			if 'cross_over_fct' in inspect.getargspec(function.func).args:
 				if not hasattr(self, 'cross_over'):
-					raise WrongOrderError('cross_over function has to be set before set_generate_imigrants can be used')
+					raise WrongOrderError('cross_over function has to be set before set_generate_immigrants can be used')
 				setattr(self,'generate_immigrants', partial(function,cross_over_fct=self.cross_over))
 			else:
 				setattr(self,'generate_immigrants', function)

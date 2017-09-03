@@ -14,8 +14,8 @@ class Model:
 		"""
 		Base class for models.
 
-		This class is the base class can be used to creat
-		coustomized models for the calculation of fitness
+		This class is the base class can be used to create
+		customized models for the calculation of fitness
 		measures.
 
 		Parameters
@@ -32,7 +32,7 @@ class Model:
 
 	def design_matrix(self, sequence):
 		"""
-		Retrun design matrix for a given `sequence`.
+		Return design matrix for a given `sequence`.
 
 		This method executes the `design_matrix_func` given in
 		the initialisation of the object. The parameter types
@@ -53,7 +53,7 @@ class Model:
 
 	def cov_beta(self, X):
 		"""
-		Retrun covariance matrix for a given design matrix `X`.
+		Return covariance matrix for a given design matrix `X`.
 
 		This method executes the `cov_beta_func` given in
 		the initialisation of the object. The parameter types
@@ -78,14 +78,14 @@ class EstimationModel(Model):
 	"""
 	This class implements a model for estimating the Haemodynamic Response Function (HRF).
 
-	The model employes pre-whitening to account for
+	The model employs pre-whitening to account for
 	autocorrelation for the errors. Either `whitening_mat` or
 	`err_cov_mat` must be given.
 
 	Parameters
 	----------
 	basis_set : numpy array
-	    Array with hrf basis vetors as rows.
+	    Array with hrf basis vectors as rows.
 	whitening_mat : numpy matrix, optional
 	    Whitening matrix.
 	err_cov_mat : numpy matrix, optional
@@ -97,9 +97,9 @@ class EstimationModel(Model):
 	    Function used for convolution of HRF and sequence. Can be
 	    changed in order to correct for non-linearity.
 	extra_evs : array-like object
-	    Extra explenatory variables in form of a 2D array-like object
-	    with regressors as collumns. Shapes is
-	    (number of extra evs, sequence length). If None, a constant regressor
+	    Extra explanatory variables in form of a 2D array-like object
+	    with regressors as columns. Shapes is
+	    (number of extra EVs, sequence length). If None, a constant regressor
 	    is used for baseline correction.
 	"""
 
@@ -129,10 +129,10 @@ class EstimationModel(Model):
 		"""
 		Calculate design matrix.
 
-		This method calculates the desing matrix for a given
-		`sequence`. Colums of the desing matrix are a constant
-		(ones) a linear time course and the convolution of the
-		basis vetors with the `sequence`.
+		This method calculates the design matrix for a given
+		`sequence`. Columns of the design matrix are a constant
+		(ones), a linearly increasing time course, and the convolution of the
+		basis vectors with the `sequence`.
 
 		Parameters
 		----------
@@ -191,7 +191,7 @@ class EstimationModel(Model):
 class DetectionModel(Model):
 	"""
 	This class implements a model for detecting specific
-	constrasts for a given/known Haemodynamic Response Function (HRF).
+	contrasts for a given/known Haemodynamic Response Function (HRF).
 
 	Unless otherwise specified the parameters and returns are the same
 	as for `EstimationModel`.
@@ -228,7 +228,7 @@ class DetectionModel(Model):
 
 		This method calculates the design matrix for a given
 		`sequence`. Columns of the design matrix are a constant
-		(ones) a linear time course and the convolution of `hrf`
+		(ones), a linearly increasing time course, and the convolution of `hrf`
 		with the sequence.
 
 		Parameters
@@ -391,7 +391,7 @@ def get_whitening_mat(cov_mat, whitening_type='zca', epsilon=1e-10):
 	whitening_type : string, optional
 	    Type of whitening. Can be 'zca' or 'cholesky'.
 	epsilon : float
-	    Constant to avoid zero devision when inverting eigenvalues.
+	    Constant to avoid zero division when inverting eigenvalues.
 
 	Returns
 	-------
@@ -419,7 +419,7 @@ def get_autocorr_whitening_mat(acf, epsilon=1e-10):
 	acf : np.array
 	    Autocorrelation function.
 	epsilon : float
-	    Constant added to 0 eigenvalues to avoid devision by zero.
+	    Constant added to 0 eigenvalues to avoid division by zero.
 
 	Returns
 	-------
@@ -498,7 +498,7 @@ def squashing_function(array, max=2):
 	Parameters
 	----------
 	array : array like
-	    Array of vlaues to be squashes.
+	    Array of values to be squashes.
 	max : float
 	    Maximum value used for squashing.
 	"""

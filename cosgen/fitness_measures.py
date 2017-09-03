@@ -21,7 +21,7 @@ def estimator_variance(sequence, model, optimality, contrast=None, normalization
 	    design matrix and covariance matrix.
 	optimality : string
 	    Can be 'a' for a-optimality (trace) or 'd' for d-optimality
-	    (determinat).
+	    (determinant).
 	contrast : numpy matrix
 	    Matrix containing contrast vectors as rows.
 	Returns
@@ -41,7 +41,7 @@ def estimator_variance(sequence, model, optimality, contrast=None, normalization
 	elif optimality=='d':
 		return 1./np.linalg.det(covariance_beta)/normalization
 	else:
-		raise OptimalityError('Unknow optimality {0}. Possible choices are "a","d"'.format(optimality))
+		raise OptimalityError('Unknown optimality {0}. Possible choices are "a","d"'.format(optimality))
 
 def jitter(sequence, normalization=1):
 	sp = abs(np.fft.fft(sequence.l))
