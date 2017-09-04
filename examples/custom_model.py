@@ -25,7 +25,7 @@ hrflength = len(hrf)
 ecm = models.get_ar1_cov(seqlength,0.78)	#ecm = estimator covariance matrix
 whitening_mat = np.linalg.inv(np.linalg.cholesky(ecm))
 
-def design_matrix(sequence): 
+def design_matrix(sequence):
 	ls = len(sequence.l)
 	DM = np.empty((ls,4))
 	DM[:,0]=np.ones(seqlength)
@@ -38,7 +38,7 @@ def design_matrix(sequence):
 	DM[:,2:3] = np.transpose(np.apply_along_axis(lambda m: models.orthogonalize(DM[:,0:2],models.gaussian_highpass(np.convolve(m,hrf)[0:ls])), axis=1, arr=X))
 	DM[:,3:] = np.transpose(np.apply_along_axis(lambda m: models.orthogonalize(DM[:,0:3],models.gaussian_highpass(np.convolve(m,hrf)[0:ls])), axis=1, arr=Xconfoundregressor))
 	return DM
- 
+
 def cov_beta(X):
 	Z = whitening_mat*X
 	try:
@@ -50,7 +50,7 @@ def cov_beta(X):
 		print(self.whitening_mat)
 		print('Z:')
 		print(Z)
-	return Zpinv * np.transpose(Zpinv)	
+	return Zpinv * np.transpose(Zpinv)
 def main():
 	model = models.Model(design_matrix,cov_beta)
 
