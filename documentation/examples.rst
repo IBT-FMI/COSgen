@@ -7,7 +7,7 @@ Examples
 Optimal block design for contrast detection
 ===========================================
 
-``block_design_for_destection.py``
+``block_design_for_detection.py``
 
 Custom model
 ============
