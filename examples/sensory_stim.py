@@ -51,7 +51,8 @@ whitening_mat = np.linalg.inv(np.linalg.cholesky(ecm))
 #		print(Z)
 #	return Zpinv * np.transpose(Zpinv)
 def main():
-#	model = models.DetectionModel()
+	hrf = models.get_FIR_basis_set(3)
+	model = models.EstimationModel(hrf)
 
 	fc = FunctionCrate()
 	c = np.zeros(6)
