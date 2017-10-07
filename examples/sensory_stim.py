@@ -51,14 +51,16 @@ whitening_mat = np.linalg.inv(np.linalg.cholesky(ecm))
 #		print(Z)
 #	return Zpinv * np.transpose(Zpinv)
 def main():
-	model = models.DetectionModel()
+#	model = models.DetectionModel()
 
 	fc = FunctionCrate()
-	c = np.zeros(4)
-	c[0]=0
-	c[1]=0
+	c = np.zeros(6)
+	c[0]=1
+	c[1]=1
 	c[2]=1
-	c[3]=0
+	c[3]=-1
+	c[4]=-1
+	c[5]=-1
 	contrast = np.matrix(c)
 	print(contrast)
 	return
