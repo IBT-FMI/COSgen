@@ -17,7 +17,7 @@ from functools import partial
 storage_path = '~/.cosgen'
 seqlength = 1490
 TR = 1
-nstimtypes = 1
+nstimtypes = 2
 population_size = 20
 
 ecm = models.get_ar1_cov(seqlength,0.78)	#ecm = estimator covariance matrix
@@ -53,29 +53,30 @@ whitening_mat = np.linalg.inv(np.linalg.cholesky(ecm))
 #	return Zpinv * np.transpose(Zpinv)
 def main():
 	fsl_basis_set_file = '/usr/share/fsl/etc/default_flobs.flobs/hrfbasisfns.txt'
-	hrf = np.loadtxt(fsl_basis_set_file, ndmin=2)
+	hrf = np.loadtxt(fsl_basis_set_file, ndmin=2).transpose()
 	#hrf = models.get_FIR_basis_set(3)
 	model = models.EstimationModel(hrf, whitening_mat=whitening_mat)
 
 	fc = FunctionCrate()
-	c = np.zeros(6)
-	c[0]=1
+	c = np.zeros(7)
+	c[0]=0
 	c[1]=1
 	c[2]=1
-	c[3]=-1
+	c[3]=1
 	c[4]=-1
 	c[5]=-1
+	c[6]=-1
 	contrast = np.matrix(c)
 	fc.add_fitness_measure('est_var', partial(fitness_measures.estimator_variance, model=model, optimality='d', contrast=contrast))
-	blocksize = estimate_optimal_block_size(seqlength, fc)
-	print('blocksize', blocksize)
-	return
+	#blocksize = estimate_optimal_block_size(seqlength, fc)
+	#print('blocksize', blocksize)
+	#return
 	fc.set_mutate(mutate)
 	fc.set_cross_over(cross_over)
-	fc.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=blocksize))
+	fc.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=20))
 	statistics = Statistics(storage_path)
 	population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
-	population.append(Sequence(seqlength,nstimtypes,'block',block_size=blocksize))
+	population.append(Sequence(seqlength,nstimtypes,'block',block_size=20))
 	population = ga(population,fc,generations=10000,nsurvive=5,nimmigrants=4,stat=statistics)
 	fc.find_best(population,1)[0].dump(storage_path,TR=TR)
 
