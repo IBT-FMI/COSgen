@@ -1,0 +1,17 @@
+onset	duration	frequency	pulse_width	amplitude	out_channel	trial_type	target		output_strength	output_unit
+120	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+210	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
+300	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+390	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
+480	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+570	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
+660	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+750	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
+840	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+930	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
+1020	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+1110	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
+1200	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+1290	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
+1380	8		3		0.0005		1.0		4		left		hindlimb	0.7		mA
+1470	8		3		0.0005		1.0		5		right		hindlimb	0.7		mA
