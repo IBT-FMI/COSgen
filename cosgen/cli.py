@@ -7,7 +7,7 @@ try:
 	from cosgen.sequence import Sequence, estimate_optimal_block_size
 	from cosgen.mutate import mutate
 	from cosgen.cross_over import cross_over
-	from cosgen.immigrants import generate_immigrants
+	from cosgen.immigrants import generate_immigrants, generate_block_immigrants
 	import cosgen.models as models
 	from cosgen.statistics import Statistics
 except ImportError:
@@ -28,7 +28,7 @@ from functools import partial
 import datetime
 import numpy as np
 
-def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1, model_type='detection', autoregression=0.5, baseline='auto'):
+def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen', seqlength=100, maxblocklength=40, minblocklength=5, nstimtypes=1, generations=10000, survivors=5, nimmigrants=4, hrflength=30, TR=1, model_type='detection', autoregression=0.5, baseline='auto'):
 	"""
 	Run default optimization.
 
@@ -46,6 +46,10 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 	    Path to folder where output is saved.
 	seqlength : int
 	    Length of the sequence that is optimized.
+	maxblocklength : int
+	    Maximum block length allowed.
+	minblocklength : int
+	    Minimum block length allowed.
 	nstimtypes : int
 	    Number of possible stimulus types in the sequence.
 	generations : int
@@ -105,10 +109,10 @@ def cli_algorithm(population_size=20, library_size=20, storage_path='~/.cosgen',
 	optimal_block_size = estimate_optimal_block_size(seqlength, fcts)
 	if baseline=='auto':
 		baseline = 2*optimal_block_size
-	fcts.set_generate_immigrants(partial(generate_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=optimal_block_size))
+	fcts.set_generate_immigrants(partial(generate_block_immigrants, seqlen=seqlength, nstimtypes=nstimtypes, block_size=list(range(minblocklength,maxblocklength)),gap_size=50,gap_sigma=30))
 	statistics = Statistics(storage_path)
 	population = [Sequence(seqlength,nstimtypes) for i in range(population_size-1)]
-	population.append(Sequence(seqlength,nstimtypes,'block',block_size=10))
+	population.append(Sequence(seqlength,nstimtypes,'block',block_size=max(min(optimal_block_size,maxblocklength),minblocklength)))
 	population = ga(population,fcts,generations,survivors,nimmigrants,statistics)
 	for i,seq in enumerate(fcts.find_best(population,library_size)):
 		seq.add_baseline(baseline)

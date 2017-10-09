@@ -206,9 +206,11 @@ class FunctionCrate:
 		the genetic algorithm. The function should normally return
 		a list of `cosgen.sequence.Sequence` objects. `function`
 		may use a cross over function for the construction
-		of immigrants. If `function` has a parameter
-		'cross_over_fct' it is automatically set to the function
-		previously set with `set_cross_over`.
+		of immigrants, in which case it should have a
+		`cross_over_fct` parameter. If `function` has a parameter
+		'cross_over_fct' this will be assigned the value of
+		`FunctionCrate.cross_over`. `FunctionCrate.cross_over`
+		itself may be set with `FunctionCrate.set_cross_over`.
 
 		Parameters
 		----------

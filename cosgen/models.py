@@ -92,7 +92,7 @@ class EstimationModel(Model):
 	    Error covariance matrix.
 	filterfunc : function
 	    Filter function takes numpy array as input and returns filtered
-	    numpy array (c.f. :func:`~cosgen.models.gaussian_highpass`)
+	    numpy array (cf. :func:`~cosgen.models.gaussian_highpass`)
 	convolution_func : function
 	    Function used for convolution of HRF and sequence. Can be
 	    changed in order to correct for non-linearity.
